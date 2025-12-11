@@ -20,14 +20,28 @@ const CreateGiftListPage = () => {
   const [currentCursor, setCurrentCursor] = useState(null);
   const [loadingCollections, setLoadingCollections] = useState(false);
   const [sortBy, setSortBy] = useState("bestselling"); // bestselling, price-asc, price-desc, name-asc, name-desc
+  const [popularityData, setPopularityData] = useState({}); // product_id -> count
 
-  // Carica collezioni e prodotti
+  // Carica collezioni, prodotti e dati popolarità
   useEffect(() => {
     if (step === 2) {
       loadCollections();
       loadProducts();
+      loadPopularityData();
     }
   }, [step]);
+
+  const loadPopularityData = async () => {
+    try {
+      const res = await fetch("/api/popular-products");
+      const data = await res.json();
+      if (res.ok) {
+        setPopularityData(data);
+      }
+    } catch (err) {
+      console.error("Error loading popularity data:", err);
+    }
+  };
 
   // Ricarica prodotti quando cambiano i filtri
   useEffect(() => {
@@ -113,7 +127,12 @@ const CreateGiftListPage = () => {
         return sorted.sort((a, b) => b.title.localeCompare(a.title));
       case "bestselling":
       default:
-        return sorted; // L'ordine di default da Shopify è per popolarità
+        // Ordina per numero di volte che il prodotto è stato aggiunto alle liste
+        return sorted.sort((a, b) => {
+          const countA = popularityData[a.id] || 0;
+          const countB = popularityData[b.id] || 0;
+          return countB - countA; // Più richiesti prima
+        });
     }
   };
 
