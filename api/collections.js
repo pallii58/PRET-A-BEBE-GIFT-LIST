@@ -26,9 +26,6 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: "Method not allowed" });
   }
 
-  console.log("[Collections] SHOPIFY_STORE_DOMAIN:", SHOPIFY_STORE_DOMAIN);
-  console.log("[Collections] SHOPIFY_STOREFRONT_TOKEN:", SHOPIFY_STOREFRONT_TOKEN ? "SET" : "NOT SET");
-
   if (!SHOPIFY_STORE_DOMAIN || !SHOPIFY_STOREFRONT_TOKEN) {
     console.error("[Collections] Missing Shopify Storefront credentials");
     return res.status(500).json({ message: "Shopify not configured" });
@@ -36,7 +33,6 @@ export default async function handler(req, res) {
 
   try {
     const url = `https://${SHOPIFY_STORE_DOMAIN}/api/2024-01/graphql.json`;
-    console.log("[Collections] Fetching from:", url);
 
     const response = await fetch(url, {
       method: "POST",
@@ -46,13 +42,11 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         query: COLLECTIONS_QUERY,
-        variables: { first: 50 },
+        variables: { first: 250 }, // Max allowed by Shopify
       }),
     });
 
     const data = await response.json();
-    console.log("[Collections] Response status:", response.status);
-    console.log("[Collections] Response data:", JSON.stringify(data).substring(0, 500));
 
     if (data.errors) {
       console.error("[Collections] Shopify API errors:", data.errors);
@@ -60,21 +54,20 @@ export default async function handler(req, res) {
     }
 
     if (!data.data?.collections?.edges) {
-      console.error("[Collections] No collections in response");
       return res.status(200).json([]);
     }
 
-    // Transform collections
-    const collections = data.data.collections.edges.map(({ node }) => ({
-      id: node.id.replace("gid://shopify/Collection/", ""),
-      title: node.title,
-      handle: node.handle,
-      description: node.description,
-      image: node.image?.url || null,
-      productsCount: 0, // We'll skip counting for now
-    }));
+    // Transform and filter collections - exclude "USO INTERNO"
+    const collections = data.data.collections.edges
+      .map(({ node }) => ({
+        id: node.id.replace("gid://shopify/Collection/", ""),
+        title: node.title,
+        handle: node.handle,
+        description: node.description,
+        image: node.image?.url || null,
+      }))
+      .filter(col => !col.title.toUpperCase().includes("USO INTERNO"));
 
-    console.log("[Collections] Found collections:", collections.length);
     return res.status(200).json(collections);
   } catch (error) {
     console.error("[Collections] Error:", error);

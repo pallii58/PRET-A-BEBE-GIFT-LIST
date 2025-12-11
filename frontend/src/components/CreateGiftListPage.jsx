@@ -201,13 +201,15 @@ const CreateGiftListPage = () => {
         </div>
       )}
 
-      {/* Step 2: Selezione prodotti con sidebar categorie */}
+      {/* Step 2: Selezione prodotti con sidebar collezioni */}
       {step === 2 && (
         <div style={styles.shopLayout}>
-          {/* Sidebar Collezioni */}
+          {/* Sidebar Collezioni - scroll indipendente */}
           <aside style={styles.sidebar}>
-            <h3 style={styles.sidebarTitle}>Collezioni</h3>
-            <div style={styles.categoryList}>
+            <div style={styles.sidebarHeader}>
+              <h3 style={styles.sidebarTitle}>Collezioni</h3>
+            </div>
+            <div style={styles.categoryListScroll}>
               <button
                 style={{
                   ...styles.categoryButton,
@@ -227,12 +229,11 @@ const CreateGiftListPage = () => {
                   onClick={() => selectCollection(col.handle)}
                 >
                   {col.title}
-                  <span style={styles.categoryCount}>{col.productsCount}</span>
                 </button>
               ))}
             </div>
             
-            {/* Prodotti selezionati */}
+            {/* Prodotti selezionati - fisso in basso */}
             <div style={styles.selectedSummary}>
               <h4 style={styles.selectedTitle}>
                 Selezionati: {selectedProducts.length}
@@ -248,7 +249,7 @@ const CreateGiftListPage = () => {
             </div>
           </aside>
 
-          {/* Area principale prodotti */}
+          {/* Area principale prodotti - scroll indipendente */}
           <main style={styles.mainContent}>
             {/* Barra di ricerca */}
             <div style={styles.searchBar}>
@@ -281,80 +282,83 @@ const CreateGiftListPage = () => {
               </p>
             </div>
 
-            {/* Griglia prodotti */}
-            {loading ? (
-              <div style={styles.loadingContainer}>
-                <p style={styles.loading}>⏳ Caricamento prodotti...</p>
-              </div>
-            ) : error ? (
-              <div style={styles.errorContainer}>
-                <p style={styles.error}>{error}</p>
-                <button style={styles.retryButton} onClick={() => loadProducts()}>
-                  Riprova
-                </button>
-              </div>
-            ) : products.length === 0 ? (
-              <div style={styles.emptyContainer}>
-                <p>Nessun prodotto trovato</p>
-              </div>
-            ) : (
-              <>
-                <div style={styles.productsGrid}>
-                  {products.map((product) => {
-                    const isSelected = selectedProducts.find((p) => p.id === product.id);
-                    return (
-                      <div
-                        key={product.id}
-                        style={{
-                          ...styles.productCard,
-                          ...(isSelected ? styles.productCardSelected : {}),
-                        }}
-                        onClick={() => toggleProduct(product)}
-                      >
-                        {product.image ? (
-                          <img src={product.image} alt={product.title} style={styles.productImage} />
-                        ) : (
-                          <div style={styles.productImagePlaceholder}>📦</div>
-                        )}
-                        <h4 style={styles.productTitle}>{product.title}</h4>
-                        <p style={styles.productPrice}>€{parseFloat(product.price).toFixed(2)}</p>
-                        {isSelected && <span style={styles.checkmark}>✓</span>}
-                      </div>
-                    );
-                  })}
+            {/* Area scroll prodotti */}
+            <div style={styles.productsScrollArea}>
+              {/* Griglia prodotti */}
+              {loading ? (
+                <div style={styles.loadingContainer}>
+                  <p style={styles.loading}>⏳ Caricamento prodotti...</p>
                 </div>
-
-                {/* Paginazione */}
-                <div style={styles.pagination}>
-                  <button
-                    style={{
-                      ...styles.pageButton,
-                      ...(cursors.length === 0 ? styles.pageButtonDisabled : {}),
-                    }}
-                    onClick={handlePrevPage}
-                    disabled={cursors.length === 0}
-                  >
-                    ← Precedente
-                  </button>
-                  <span style={styles.pageInfo}>
-                    Pagina {cursors.length + 1}
-                  </span>
-                  <button
-                    style={{
-                      ...styles.pageButton,
-                      ...(!pageInfo.hasNextPage ? styles.pageButtonDisabled : {}),
-                    }}
-                    onClick={handleNextPage}
-                    disabled={!pageInfo.hasNextPage}
-                  >
-                    Successiva →
+              ) : error ? (
+                <div style={styles.errorContainer}>
+                  <p style={styles.error}>{error}</p>
+                  <button style={styles.retryButton} onClick={() => loadProducts()}>
+                    Riprova
                   </button>
                 </div>
-              </>
-            )}
+              ) : products.length === 0 ? (
+                <div style={styles.emptyContainer}>
+                  <p>Nessun prodotto trovato</p>
+                </div>
+              ) : (
+                <>
+                  <div style={styles.productsGrid}>
+                    {products.map((product) => {
+                      const isSelected = selectedProducts.find((p) => p.id === product.id);
+                      return (
+                        <div
+                          key={product.id}
+                          style={{
+                            ...styles.productCard,
+                            ...(isSelected ? styles.productCardSelected : {}),
+                          }}
+                          onClick={() => toggleProduct(product)}
+                        >
+                          {product.image ? (
+                            <img src={product.image} alt={product.title} style={styles.productImage} />
+                          ) : (
+                            <div style={styles.productImagePlaceholder}>📦</div>
+                          )}
+                          <h4 style={styles.productTitle}>{product.title}</h4>
+                          <p style={styles.productPrice}>€{parseFloat(product.price).toFixed(2)}</p>
+                          {isSelected && <span style={styles.checkmark}>✓</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
 
-            {/* Pulsanti navigazione */}
-            <div style={styles.buttonRow}>
+                  {/* Paginazione */}
+                  <div style={styles.pagination}>
+                    <button
+                      style={{
+                        ...styles.pageButton,
+                        ...(cursors.length === 0 ? styles.pageButtonDisabled : {}),
+                      }}
+                      onClick={handlePrevPage}
+                      disabled={cursors.length === 0}
+                    >
+                      ← Precedente
+                    </button>
+                    <span style={styles.pageInfo}>
+                      Pagina {cursors.length + 1}
+                    </span>
+                    <button
+                      style={{
+                        ...styles.pageButton,
+                        ...(!pageInfo.hasNextPage ? styles.pageButtonDisabled : {}),
+                      }}
+                      onClick={handleNextPage}
+                      disabled={!pageInfo.hasNextPage}
+                    >
+                      Successiva →
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Pulsanti navigazione - fissi in basso */}
+            <div style={styles.bottomBar}>
               <button style={styles.secondaryButton} onClick={() => setStep(1)}>
                 ← Indietro
               </button>
@@ -542,24 +546,28 @@ const styles = {
     margin: "24px 0",
   },
   
-  // Layout Shop con sidebar
+  // Layout Shop con sidebar - altezza 100vh
   shopLayout: {
     display: "flex",
     maxWidth: "1400px",
     margin: "0 auto",
     padding: "20px",
     gap: "24px",
+    height: "calc(100vh - 100px)", // Altezza meno header
+    overflow: "hidden",
   },
   sidebar: {
-    width: "250px",
+    width: "280px",
     flexShrink: 0,
     backgroundColor: "white",
     borderRadius: "12px",
-    padding: "20px",
     boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
-    height: "fit-content",
-    position: "sticky",
-    top: "20px",
+    display: "flex",
+    flexDirection: "column",
+    overflow: "hidden",
+  },
+  sidebarHeader: {
+    padding: "20px 20px 0",
   },
   sidebarTitle: {
     margin: "0 0 16px",
@@ -568,15 +576,17 @@ const styles = {
     borderBottom: "2px solid #e74c3c",
     paddingBottom: "8px",
   },
-  categoryList: {
+  categoryListScroll: {
     display: "flex",
     flexDirection: "column",
     gap: "4px",
+    padding: "0 20px",
+    overflowY: "auto",
+    flex: 1,
   },
   categoryButton: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
+    display: "block",
+    width: "100%",
     padding: "10px 12px",
     backgroundColor: "transparent",
     border: "none",
@@ -586,23 +596,20 @@ const styles = {
     fontSize: "14px",
     color: "#666",
     transition: "all 0.2s",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
   categoryButtonActive: {
     backgroundColor: "#fef5f4",
     color: "#e74c3c",
     fontWeight: "bold",
   },
-  categoryCount: {
-    fontSize: "12px",
-    backgroundColor: "#f0f0f0",
-    padding: "2px 8px",
-    borderRadius: "10px",
-  },
   selectedSummary: {
-    marginTop: "24px",
-    padding: "16px",
+    padding: "16px 20px",
     backgroundColor: "#fef5f4",
-    borderRadius: "8px",
+    borderTop: "1px solid #eee",
+    flexShrink: 0,
   },
   selectedTitle: {
     margin: "0 0 12px",
@@ -620,10 +627,18 @@ const styles = {
     fontWeight: "bold",
   },
 
-  // Main content
+  // Main content - scroll indipendente
   mainContent: {
     flex: 1,
     minWidth: 0,
+    display: "flex",
+    flexDirection: "column",
+    overflow: "hidden",
+  },
+  productsScrollArea: {
+    flex: 1,
+    overflowY: "auto",
+    padding: "0 4px",
   },
   searchBar: {
     display: "flex",
@@ -803,6 +818,15 @@ const styles = {
     gap: "16px",
     justifyContent: "center",
     marginTop: "24px",
+  },
+  bottomBar: {
+    display: "flex",
+    gap: "16px",
+    justifyContent: "center",
+    padding: "16px 0",
+    backgroundColor: "white",
+    borderTop: "1px solid #eee",
+    flexShrink: 0,
   },
 
   // Form
