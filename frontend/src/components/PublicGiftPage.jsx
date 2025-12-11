@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, TextField, Button, Banner, InlineStack, Text } from "@shopify/polaris";
+import { Card, TextField, Button, Banner, HorizontalStack, BlockStack, Text } from "@shopify/polaris";
 import ProductItemCard from "./ProductItemCard.jsx";
 
 const PublicGiftPage = () => {
@@ -28,20 +28,20 @@ const PublicGiftPage = () => {
   return (
     <Card.Section>
       {error && <Banner status="critical">{error}</Banner>}
-      <InlineStack gap="200" blockAlign="center">
+      <HorizontalStack gap="200" blockAlign="center">
         <TextField label="Slug pubblico" value={slug} onChange={setSlug} />
         <Button onClick={load} primary>
           Carica
         </Button>
-      </InlineStack>
+      </HorizontalStack>
       {data && (
         <Card title={data.title} sectioned>
           <Text tone="subdued">{data.customer_email}</Text>
-          <Stack vertical spacing="tight">
+          <BlockStack gap="200">
             {data.items?.map((item) => (
               <ProductItemCard key={item.id} item={item} onAddToCart={handleAddToCart} />
             ))}
-          </Stack>
+          </BlockStack>
         </Card>
       )}
     </Card.Section>

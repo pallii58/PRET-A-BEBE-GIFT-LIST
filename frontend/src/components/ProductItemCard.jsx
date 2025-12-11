@@ -1,10 +1,10 @@
-import { Card, Badge, Button, InlineStack, Text } from "@shopify/polaris";
+import { Card, Badge, Button, HorizontalStack, Text } from "@shopify/polaris";
 
 const ProductItemCard = ({ item, onAddToCart }) => {
   return (
     <Card>
       <Card.Section>
-        <InlineStack align="space-between" blockAlign="center" gap="200">
+        <HorizontalStack align="space-between" blockAlign="center" gap="200">
           <div style={{ flex: 1 }}>
             <Text as="h3" variant="headingMd">
               Variant {item.variant_id}
@@ -21,7 +21,7 @@ const ProductItemCard = ({ item, onAddToCart }) => {
               Aggiungi al carrello
             </Button>
           )}
-        </InlineStack>
+        </HorizontalStack>
       </Card.Section>
     </Card>
   );
