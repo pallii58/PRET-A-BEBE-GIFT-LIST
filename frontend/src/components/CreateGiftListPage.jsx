@@ -329,32 +329,34 @@ const CreateGiftListPage = () => {
                     })}
                   </div>
 
-                  {/* Paginazione */}
-                  <div style={styles.pagination}>
-                    <button
-                      style={{
-                        ...styles.pageButton,
-                        ...(cursors.length === 0 ? styles.pageButtonDisabled : {}),
-                      }}
-                      onClick={handlePrevPage}
-                      disabled={cursors.length === 0}
-                    >
-                      ← Precedente
-                    </button>
-                    <span style={styles.pageInfo}>
-                      Pagina {cursors.length + 1}
-                    </span>
-                    <button
-                      style={{
-                        ...styles.pageButton,
-                        ...(!pageInfo.hasNextPage ? styles.pageButtonDisabled : {}),
-                      }}
-                      onClick={handleNextPage}
-                      disabled={!pageInfo.hasNextPage}
-                    >
-                      Successiva →
-                    </button>
-                  </div>
+                  {/* Paginazione - solo se più di una pagina */}
+                  {(pageInfo.hasNextPage || cursors.length > 0) && (
+                    <div style={styles.pagination}>
+                      <button
+                        style={{
+                          ...styles.pageButton,
+                          ...(cursors.length === 0 ? styles.pageButtonDisabled : {}),
+                        }}
+                        onClick={handlePrevPage}
+                        disabled={cursors.length === 0}
+                      >
+                        ← Precedente
+                      </button>
+                      <span style={styles.pageInfo}>
+                        Pagina {cursors.length + 1}
+                      </span>
+                      <button
+                        style={{
+                          ...styles.pageButton,
+                          ...(!pageInfo.hasNextPage ? styles.pageButtonDisabled : {}),
+                        }}
+                        onClick={handleNextPage}
+                        disabled={!pageInfo.hasNextPage}
+                      >
+                        Successiva →
+                      </button>
+                    </div>
+                  )}
                 </>
               )}
             </div>
