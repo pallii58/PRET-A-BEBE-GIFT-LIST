@@ -201,9 +201,9 @@ const CreateGiftListPage = () => {
       {/* Step 2: Selezione prodotti con sidebar categorie */}
       {step === 2 && (
         <div style={styles.shopLayout}>
-          {/* Sidebar Categorie */}
+          {/* Sidebar Collezioni */}
           <aside style={styles.sidebar}>
-            <h3 style={styles.sidebarTitle}>Categorie</h3>
+            <h3 style={styles.sidebarTitle}>Collezioni</h3>
             <div style={styles.categoryList}>
               <button
                 style={{
