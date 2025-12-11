@@ -19,6 +19,7 @@ const CreateGiftListPage = () => {
   const [cursors, setCursors] = useState([]); // Stack di cursori per navigazione indietro
   const [currentCursor, setCurrentCursor] = useState(null);
   const [loadingCollections, setLoadingCollections] = useState(false);
+  const [sortBy, setSortBy] = useState("bestselling"); // bestselling, price-asc, price-desc, name-asc, name-desc
 
   // Carica collezioni e prodotti
   useEffect(() => {
@@ -97,6 +98,26 @@ const CreateGiftListPage = () => {
     e.preventDefault();
     // La ricerca viene gestita dall'useEffect
   };
+
+  // Ordina i prodotti in base al filtro selezionato
+  const getSortedProducts = () => {
+    const sorted = [...products];
+    switch (sortBy) {
+      case "price-asc":
+        return sorted.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+      case "price-desc":
+        return sorted.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+      case "name-asc":
+        return sorted.sort((a, b) => a.title.localeCompare(b.title));
+      case "name-desc":
+        return sorted.sort((a, b) => b.title.localeCompare(a.title));
+      case "bestselling":
+      default:
+        return sorted; // L'ordine di default da Shopify è per popolarità
+    }
+  };
+
+  const sortedProducts = getSortedProducts();
 
   const selectCollection = (handle) => {
     setSelectedCollection(handle === selectedCollection ? null : handle);
@@ -261,7 +282,7 @@ const CreateGiftListPage = () => {
 
           {/* Area principale prodotti - scroll indipendente */}
           <main style={styles.mainContent}>
-            {/* Barra di ricerca */}
+            {/* Barra di ricerca e filtri */}
             <div style={styles.searchBar}>
               <form onSubmit={handleSearch} style={styles.searchForm}>
                 <input
@@ -275,6 +296,17 @@ const CreateGiftListPage = () => {
                   🔍
                 </button>
               </form>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                style={styles.sortSelect}
+              >
+                <option value="bestselling">Più richiesti</option>
+                <option value="price-asc">Prezzo: basso → alto</option>
+                <option value="price-desc">Prezzo: alto → basso</option>
+                <option value="name-asc">Nome: A → Z</option>
+                <option value="name-desc">Nome: Z → A</option>
+              </select>
               {selectedProducts.length > 0 && (
                 <div style={styles.selectedBadge}>
                   {selectedProducts.length} selezionati
@@ -316,7 +348,7 @@ const CreateGiftListPage = () => {
               ) : (
                 <>
                   <div style={styles.productsGrid}>
-                    {products.map((product) => {
+                    {sortedProducts.map((product) => {
                       const isSelected = selectedProducts.find((p) => p.id === product.id);
                       return (
                         <div
@@ -694,6 +726,16 @@ const styles = {
     borderRadius: "0 8px 8px 0",
     cursor: "pointer",
     fontSize: "16px",
+  },
+  sortSelect: {
+    padding: "12px 16px",
+    border: "2px solid #e0e0e0",
+    borderRadius: "8px",
+    fontSize: "14px",
+    backgroundColor: "white",
+    cursor: "pointer",
+    outline: "none",
+    minWidth: "180px",
   },
   selectedBadge: {
     padding: "8px 16px",
