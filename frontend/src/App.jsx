@@ -13,19 +13,31 @@ const useQueryParam = (key) => {
 function EmbeddedWrapper({ children }) {
   const host = useQueryParam("host");
   const apiKey = import.meta.env.VITE_SHOPIFY_API_KEY;
-  const appBridgeConfig = useMemo(
-    () =>
+  const appBridgeConfig = useMemo(() => {
+    const cfg =
       host && apiKey
         ? {
             apiKey,
             host,
             forceRedirect: true,
           }
-        : null,
-    [host, apiKey]
-  );
+        : null;
+    if (typeof window !== "undefined") {
+      // Debug log for embed initialization
+      console.debug("AppBridge config", { host, hasApiKey: !!apiKey, cfg });
+    }
+    return cfg;
+  }, [host, apiKey]);
 
-  if (!appBridgeConfig) return children;
+  if (!appBridgeConfig || !AppBridgeProvider) {
+    if (typeof window !== "undefined") {
+      console.debug("Skipping AppBridgeProvider", {
+        hasConfig: !!appBridgeConfig,
+        hasProvider: !!AppBridgeProvider,
+      });
+    }
+    return children;
+  }
 
   return <AppBridgeProvider config={appBridgeConfig}>{children}</AppBridgeProvider>;
 }
