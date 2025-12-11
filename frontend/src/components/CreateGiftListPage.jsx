@@ -591,7 +591,7 @@ const styles = {
   categoryButton: {
     display: "block",
     width: "100%",
-    padding: "10px 12px",
+    padding: "15px 12px",
     backgroundColor: "transparent",
     border: "none",
     borderRadius: "8px",
