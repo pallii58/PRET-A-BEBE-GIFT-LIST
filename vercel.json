@@ -5,6 +5,17 @@
       "memory": 256
     }
   },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors https://admin.shopify.com https://*.myshopify.com;"
+        }
+      ]
+    }
+  ],
   "rewrites": [
     { "source": "/public/gift/:slug", "destination": "/api/public/gift/:slug" }
   ]
