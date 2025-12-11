@@ -265,9 +265,11 @@ const CreateGiftListPage = () => {
                   🔍
                 </button>
               </form>
-              <div style={styles.selectedBadge}>
-                {selectedProducts.length} selezionati
-              </div>
+              {selectedProducts.length > 0 && (
+                <div style={styles.selectedBadge}>
+                  {selectedProducts.length} selezionati
+                </div>
+              )}
             </div>
 
             {/* Titolo sezione */}

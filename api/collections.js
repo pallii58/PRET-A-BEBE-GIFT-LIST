@@ -63,8 +63,6 @@ export default async function handler(req, res) {
         id: node.id.replace("gid://shopify/Collection/", ""),
         title: node.title,
         handle: node.handle,
-        description: node.description,
-        image: node.image?.url || null,
       }))
       .filter(col => !col.title.toUpperCase().includes("USO INTERNO"));
 
