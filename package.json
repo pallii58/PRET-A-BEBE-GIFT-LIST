@@ -8,7 +8,7 @@
     "dev": "npm-run-all --parallel dev:server dev:client",
     "dev:server": "node backend/server.js",
     "dev:client": "cd frontend && npm run dev",
-    "build": "cd frontend && npm run build",
+    "build": "cd frontend && npm run build && cd .. && rm -rf public && mkdir -p public && cp -R frontend/dist/* public/",
     "migrate": "node backend/db/migrate.js",
     "postinstall": "cd frontend && npm install"
   },
