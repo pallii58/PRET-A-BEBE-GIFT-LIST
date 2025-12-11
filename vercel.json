@@ -1,0 +1,12 @@
+{
+  "functions": {
+    "api/webhooks/orders-create.js": {
+      "maxDuration": 10,
+      "memory": 256
+    }
+  },
+  "rewrites": [
+    { "source": "/public/gift/:slug", "destination": "/api/public/gift/:slug" }
+  ]
+}
+
