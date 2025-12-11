@@ -426,7 +426,7 @@ const CreateGiftListPage = () => {
             </div>
 
             <div style={styles.summary}>
-              <h4>Riepilogo prodotti selezionati ({selectedProducts.length}):</h4>
+              <h4 style={styles.summaryTitle}>Riepilogo prodotti selezionati ({selectedProducts.length}):</h4>
               <div style={styles.summaryGrid}>
                 {selectedProducts.map((p) => (
                   <div key={p.id} style={styles.summaryItem}>
@@ -873,6 +873,9 @@ const styles = {
     padding: "20px",
     borderRadius: "12px",
     marginBottom: "20px",
+  },
+  summaryTitle: {
+    margin: "0 0 20px 0",
   },
   summaryGrid: {
     display: "flex",
