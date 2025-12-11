@@ -1,28 +1,36 @@
-import { AppProvider, Page, Card, Tabs } from "@shopify/polaris";
+import { AppProvider, Card, Button, Text } from "@shopify/polaris";
 import { useState } from "react";
 import ListCreator from "./components/ListCreator.jsx";
 import ListDashboard from "./components/ListDashboard.jsx";
 import PublicGiftPage from "./components/PublicGiftPage.jsx";
 
 function App() {
-  const [selected, setSelected] = useState(0);
-  const tabs = [
-    { id: "create", content: "Crea lista", panelID: "create-panel" },
-    { id: "dashboard", content: "Dashboard", panelID: "dashboard-panel" },
-    { id: "public", content: "Pagina pubblica demo", panelID: "public-panel" },
-  ];
+  const [selected, setSelected] = useState("create");
 
   return (
     <AppProvider i18n={{}}>
-      <Page title="LISTA REGALI PRET A BEBE">
+      <div style={{ maxWidth: 960, margin: "20px auto", padding: "12px" }}>
+        <Text as="h1" variant="headingLg">
+          LISTA REGALI PRET A BEBE
+        </Text>
+        <div style={{ display: "flex", gap: "8px", margin: "16px 0" }}>
+          <Button primary={selected === "create"} onClick={() => setSelected("create")}>
+            Crea lista
+          </Button>
+          <Button primary={selected === "dashboard"} onClick={() => setSelected("dashboard")}>
+            Dashboard
+          </Button>
+          <Button primary={selected === "public"} onClick={() => setSelected("public")}>
+            Pagina pubblica demo
+          </Button>
+        </div>
+
         <Card>
-          <Tabs tabs={tabs} selected={selected} onSelect={setSelected}>
-            {selected === 0 && <ListCreator />}
-            {selected === 1 && <ListDashboard />}
-            {selected === 2 && <PublicGiftPage />}
-          </Tabs>
+          {selected === "create" && <ListCreator />}
+          {selected === "dashboard" && <ListDashboard />}
+          {selected === "public" && <PublicGiftPage />}
         </Card>
-      </Page>
+      </div>
     </AppProvider>
   );
 }
