@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import db from "../_db.js";
+import supabase from "../_supabase.js";
 
 export const config = {
   api: {
@@ -54,11 +54,15 @@ export default async function handler(req, res) {
     const variantIds = payload.line_items?.map((li) => String(li.variant_id)) || [];
     if (variantIds.length === 0) return res.status(200).send("No items");
 
-    await db("gift_list_items").whereIn("variant_id", variantIds).update({ purchased: true });
+    const { error: updateError } = await supabase
+      .from("gift_list_items")
+      .update({ purchased: true })
+      .in("variant_id", variantIds);
+    
+    if (updateError) throw updateError;
     return res.status(200).send("ok");
   } catch (err) {
     console.error("Failed to process webhook", err);
     return res.status(500).send("Error");
   }
 }
-

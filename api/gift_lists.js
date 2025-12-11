@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import db from "./_db.js";
+import supabase from "./_supabase.js";
 import { giftListSchema } from "./_validation.js";
 
 const generatePublicUrl = () => crypto.randomBytes(6).toString("hex");
@@ -11,14 +11,19 @@ export default async function handler(req, res) {
     const { title, customer_email } = value;
     try {
       const public_url = generatePublicUrl();
-      const [id] = await db("gift_lists").insert({
-        title,
-        customer_email,
-        public_url,
-        shop_domain: req.headers["x-shop-domain"] || "unknown",
-      });
-      const list = await db("gift_lists").where({ id }).first();
-      return res.status(201).json(list);
+      const { data, error: dbError } = await supabase
+        .from("gift_lists")
+        .insert({
+          title,
+          customer_email,
+          public_url,
+          shop_domain: req.headers["x-shop-domain"] || "unknown",
+        })
+        .select()
+        .single();
+      
+      if (dbError) throw dbError;
+      return res.status(201).json(data);
     } catch (err) {
       console.error(err);
       return res.status(500).json({ message: "Failed to create gift list" });
@@ -27,8 +32,13 @@ export default async function handler(req, res) {
 
   if (req.method === "GET") {
     try {
-      const lists = await db("gift_lists").orderBy("created_at", "desc");
-      return res.json(lists);
+      const { data, error: dbError } = await supabase
+        .from("gift_lists")
+        .select("*")
+        .order("created_at", { ascending: false });
+      
+      if (dbError) throw dbError;
+      return res.json(data);
     } catch (err) {
       console.error(err);
       return res.status(500).json({ message: "Failed to fetch gift lists" });
@@ -37,4 +47,3 @@ export default async function handler(req, res) {
 
   return res.status(405).json({ message: "Method not allowed" });
 }
-

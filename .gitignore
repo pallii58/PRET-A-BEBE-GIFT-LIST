@@ -5,3 +5,4 @@ frontend/dist
 gift_registry.sqlite
 .vercel
 .env*.local
+.env.production

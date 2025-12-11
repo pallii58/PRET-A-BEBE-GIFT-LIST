@@ -1,13 +1,25 @@
-import db from "../../_db.js";
+import supabase from "../../_supabase.js";
 
 export default async function handler(req, res) {
   const { publicUrl } = req.query;
   if (req.method === "GET") {
     try {
-      const list = await db("gift_lists").where({ public_url: publicUrl }).first();
-      if (!list) return res.status(404).json({ message: "Gift list not found" });
-      const items = await db("gift_list_items").where({ gift_list_id: list.id });
-      return res.json({ ...list, items });
+      const { data: list, error: listError } = await supabase
+        .from("gift_lists")
+        .select("*")
+        .eq("public_url", publicUrl)
+        .single();
+      
+      if (listError || !list) return res.status(404).json({ message: "Gift list not found" });
+      
+      const { data: items, error: itemsError } = await supabase
+        .from("gift_list_items")
+        .select("*")
+        .eq("gift_list_id", list.id);
+      
+      if (itemsError) throw itemsError;
+      
+      return res.json({ ...list, items: items || [] });
     } catch (err) {
       console.error(err);
       return res.status(500).json({ message: "Failed to load gift list" });
@@ -16,4 +28,3 @@ export default async function handler(req, res) {
 
   return res.status(405).json({ message: "Method not allowed" });
 }
-
