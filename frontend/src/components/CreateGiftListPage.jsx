@@ -18,6 +18,7 @@ const CreateGiftListPage = () => {
   const [pageInfo, setPageInfo] = useState({ hasNextPage: false, hasPreviousPage: false });
   const [cursors, setCursors] = useState([]); // Stack di cursori per navigazione indietro
   const [currentCursor, setCurrentCursor] = useState(null);
+  const [loadingCollections, setLoadingCollections] = useState(false);
 
   // Carica collezioni e prodotti
   useEffect(() => {
@@ -37,17 +38,17 @@ const CreateGiftListPage = () => {
   }, [searchQuery, selectedCollection]);
 
   const loadCollections = async () => {
+    setLoadingCollections(true);
     try {
       const res = await fetch("/api/collections");
       const data = await res.json();
-      console.log("[Frontend] Collections response:", data);
       if (res.ok && Array.isArray(data)) {
         setCollections(data);
-      } else {
-        console.error("[Frontend] Collections error:", data);
       }
     } catch (err) {
       console.error("[Frontend] Error loading collections:", err);
+    } finally {
+      setLoadingCollections(false);
     }
   };
 
@@ -210,27 +211,36 @@ const CreateGiftListPage = () => {
               <h3 style={styles.sidebarTitle}>Collezioni</h3>
             </div>
             <div style={styles.categoryListScroll}>
-              <button
-                style={{
-                  ...styles.categoryButton,
-                  ...(selectedCollection === null ? styles.categoryButtonActive : {}),
-                }}
-                onClick={() => selectCollection(null)}
-              >
-                🏠 Tutti i prodotti
-              </button>
-              {collections.map((col) => (
-                <button
-                  key={col.id}
-                  style={{
-                    ...styles.categoryButton,
-                    ...(selectedCollection === col.handle ? styles.categoryButtonActive : {}),
-                  }}
-                  onClick={() => selectCollection(col.handle)}
-                >
-                  {col.title}
-                </button>
-              ))}
+              {loadingCollections ? (
+                <div style={styles.loaderContainer}>
+                  <div style={styles.spinner}></div>
+                  <p style={styles.loaderText}>Caricamento...</p>
+                </div>
+              ) : (
+                <>
+                  <button
+                    style={{
+                      ...styles.categoryButton,
+                      ...(selectedCollection === null ? styles.categoryButtonActive : {}),
+                    }}
+                    onClick={() => selectCollection(null)}
+                  >
+                    🏠 Tutti i prodotti
+                  </button>
+                  {collections.map((col) => (
+                    <button
+                      key={col.id}
+                      style={{
+                        ...styles.categoryButton,
+                        ...(selectedCollection === col.handle ? styles.categoryButtonActive : {}),
+                      }}
+                      onClick={() => selectCollection(col.handle)}
+                    >
+                      {col.title}
+                    </button>
+                  ))}
+                </>
+              )}
             </div>
             
             {/* Prodotti selezionati - fisso in basso */}
@@ -974,6 +984,41 @@ const styles = {
     color: "#999",
     fontSize: "14px",
   },
-};
+  loaderContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "40px 20px",
+  },
+  spinner: {
+    width: "40px",
+    height: "40px",
+    border: "4px solid #f0f0f0",
+    borderTop: "4px solid #e74c3c",
+    borderRadius: "50%",
+    animation: "spin 1s linear infinite",
+  },
+  loaderText: {
+    marginTop: "12px",
+    color: "#999",
+    fontSize: "14px",
+  },
+}
+
+// Add CSS animation for spinner
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  `;
+  if (!document.querySelector('style[data-spinner]')) {
+    style.setAttribute('data-spinner', 'true');
+    document.head.appendChild(style);
+  }
+}
 
 export default CreateGiftListPage;
