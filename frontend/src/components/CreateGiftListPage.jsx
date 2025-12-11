@@ -589,7 +589,8 @@ const styles = {
     flex: 1,
   },
   categoryButton: {
-    display: "block",
+    display: "flex",
+    alignItems: "center",
     width: "100%",
     padding: "15px 12px",
     backgroundColor: "transparent",
