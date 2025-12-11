@@ -21,18 +21,12 @@ const CreateGiftListPage = () => {
   const loadProducts = async () => {
     setLoading(true);
     try {
-      // TODO: Integrare con Shopify Storefront API
-      // Per ora usiamo prodotti di esempio
-      const mockProducts = [
-        { id: "prod_1", variant_id: "var_1", title: "Passeggino Anex air z", price: "305.00", image: "https://via.placeholder.com/150" },
-        { id: "prod_2", variant_id: "var_2", title: "Seggiolone Ozy", price: "299.00", image: "https://via.placeholder.com/150" },
-        { id: "prod_3", variant_id: "var_3", title: "Culla Mini Stokke", price: "815.00", image: "https://via.placeholder.com/150" },
-        { id: "prod_4", variant_id: "var_4", title: "Balance Bike Banwood", price: "155.00", image: "https://via.placeholder.com/150" },
-        { id: "prod_5", variant_id: "var_5", title: "Tripp Trapp Sedia", price: "229.00", image: "https://via.placeholder.com/150" },
-        { id: "prod_6", variant_id: "var_6", title: "Activity Table Forest", price: "95.00", image: "https://via.placeholder.com/150" },
-      ];
-      setProducts(mockProducts);
+      const res = await fetch("/api/products");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Errore nel caricamento");
+      setProducts(data);
     } catch (err) {
+      console.error("Error loading products:", err);
       setError("Errore nel caricamento dei prodotti");
     } finally {
       setLoading(false);
@@ -166,9 +160,13 @@ const CreateGiftListPage = () => {
                       }}
                       onClick={() => toggleProduct(product)}
                     >
-                      <img src={product.image} alt={product.title} style={styles.productImage} />
+                      {product.image ? (
+                        <img src={product.image} alt={product.title} style={styles.productImage} />
+                      ) : (
+                        <div style={styles.productImagePlaceholder}>📦</div>
+                      )}
                       <h4 style={styles.productTitle}>{product.title}</h4>
-                      <p style={styles.productPrice}>€{product.price}</p>
+                      <p style={styles.productPrice}>€{parseFloat(product.price).toFixed(2)}</p>
                       {isSelected && <span style={styles.checkmark}>✓</span>}
                     </div>
                   );
@@ -401,9 +399,19 @@ const styles = {
   },
   productImage: {
     width: "100%",
-    height: "100px",
+    height: "120px",
     objectFit: "cover",
     borderRadius: "8px",
+  },
+  productImagePlaceholder: {
+    width: "100%",
+    height: "120px",
+    backgroundColor: "#f0f0f0",
+    borderRadius: "8px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "40px",
   },
   productTitle: {
     fontSize: "14px",
