@@ -1,18 +1,18 @@
-import { Card, Badge, Button, Stack, Text } from "@shopify/polaris";
+import { Card, Badge, Button, InlineStack, Text } from "@shopify/polaris";
 
 const ProductItemCard = ({ item, onAddToCart }) => {
   return (
     <Card>
       <Card.Section>
-        <Stack alignment="center">
-          <Stack.Item fill>
+        <InlineStack align="space-between" blockAlign="center" gap="200">
+          <div style={{ flex: 1 }}>
             <Text as="h3" variant="headingMd">
               Variant {item.variant_id}
             </Text>
             <Text as="p" tone="subdued">
               Qty: {item.quantity}
             </Text>
-          </Stack.Item>
+          </div>
           <Badge tone={item.purchased ? "success" : "attention"}>
             {item.purchased ? "Acquistato" : "Disponibile"}
           </Badge>
@@ -21,7 +21,7 @@ const ProductItemCard = ({ item, onAddToCart }) => {
               Aggiungi al carrello
             </Button>
           )}
-        </Stack>
+        </InlineStack>
       </Card.Section>
     </Card>
   );
