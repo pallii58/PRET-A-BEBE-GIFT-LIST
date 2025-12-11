@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, ResourceList, Text, Button, Banner, Stack } from "@shopify/polaris";
+import { Card, ResourceList, Text, Button, Banner, InlineStack } from "@shopify/polaris";
 import ProductItemCard from "./ProductItemCard.jsx";
 
 const ListDashboard = () => {
@@ -40,24 +40,24 @@ const ListDashboard = () => {
         items={lists}
         renderItem={(item) => (
           <ResourceList.Item id={item.id}>
-            <Stack alignment="center">
-              <Stack.Item fill>
+            <InlineStack align="space-between" blockAlign="center">
+              <div style={{ flex: 1 }}>
                 <Text variant="headingSm">{item.title}</Text>
                 <Text tone="subdued">{item.customer_email}</Text>
-              </Stack.Item>
+              </div>
               <Button onClick={() => loadDetail(item.id)}>Apri</Button>
-            </Stack>
+            </InlineStack>
           </ResourceList.Item>
         )}
       />
       {selected && (
         <Card title={`Dettaglio: ${selected.title}`} sectioned>
           <Text tone="subdued">Public URL: /public/gift/{selected.public_url}</Text>
-          <Stack vertical spacing="tight">
+          <InlineStack as="div" direction="column" gap="200">
             {selected.items?.map((item) => (
               <ProductItemCard key={item.id} item={item} />
             ))}
-          </Stack>
+          </InlineStack>
         </Card>
       )}
     </Card.Section>
