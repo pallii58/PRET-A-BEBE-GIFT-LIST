@@ -17,15 +17,33 @@ if (!url && process.env.POSTGRES_HOST && process.env.POSTGRES_USER && process.en
 }
 const isPostgres = url && (url.startsWith("postgres://") || url.startsWith("postgresql://"));
 
+// Parse URL to build connection object with explicit SSL config
+let pgConnection = null;
+if (isPostgres) {
+  try {
+    const urlObj = new URL(url);
+    const isSupabase = url.includes("supabase");
+    pgConnection = {
+      host: urlObj.hostname,
+      port: parseInt(urlObj.port) || 5432,
+      user: urlObj.username,
+      password: urlObj.password,
+      database: urlObj.pathname.slice(1) || "postgres",
+      ssl: isSupabase ? { rejectUnauthorized: false } : false,
+    };
+  } catch (e) {
+    // Fallback to connectionString if URL parsing fails
+    pgConnection = {
+      connectionString: url,
+      ssl: url.includes("supabase") ? { rejectUnauthorized: false } : false,
+    };
+  }
+}
+
 const config = isPostgres
   ? {
       client: "pg",
-      connection: {
-        connectionString: url,
-        ssl: url.includes("supabase") 
-          ? { rejectUnauthorized: false }
-          : false,
-      },
+      connection: pgConnection,
       pool: { min: 0, max: 10 },
       migrations: { directory: dirMigrations },
     }
