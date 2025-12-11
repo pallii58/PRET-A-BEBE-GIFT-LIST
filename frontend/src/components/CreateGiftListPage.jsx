@@ -284,16 +284,14 @@ const CreateGiftListPage = () => {
 
             {/* Titolo sezione */}
             <div style={styles.sectionHeader}>
-              <div>
-                <h2 style={styles.sectionTitle}>
-                  Pagina {cursors.length + 1} di {selectedCollection 
-                    ? collections.find(c => c.handle === selectedCollection)?.title || "Prodotti"
-                    : "Tutti i prodotti"}
-                </h2>
-                <p style={styles.productCount}>
-                  {products.length} prodotti mostrati
-                </p>
-              </div>
+              <h2 style={styles.sectionTitle}>
+                {selectedCollection 
+                  ? collections.find(c => c.handle === selectedCollection)?.title || "Prodotti"
+                  : "Tutti i prodotti"}
+              </h2>
+              <p style={styles.productCount}>
+                {products.length} prodotti mostrati
+              </p>
             </div>
 
             {/* Area scroll prodotti */}
@@ -327,16 +325,26 @@ const CreateGiftListPage = () => {
                             ...styles.productCard,
                             ...(isSelected ? styles.productCardSelected : {}),
                           }}
-                          onClick={() => toggleProduct(product)}
                         >
-                          {product.image ? (
-                            <img src={product.image} alt={product.title} style={styles.productImage} />
-                          ) : (
-                            <div style={styles.productImagePlaceholder}>📦</div>
-                          )}
-                          <h4 style={styles.productTitle}>{product.title}</h4>
-                          <p style={styles.productPrice}>€{parseFloat(product.price).toFixed(2)}</p>
-                          {isSelected && <span style={styles.checkmark}>✓</span>}
+                          <div onClick={() => toggleProduct(product)} style={styles.productClickArea}>
+                            {product.image ? (
+                              <img src={product.image} alt={product.title} style={styles.productImage} />
+                            ) : (
+                              <div style={styles.productImagePlaceholder}>📦</div>
+                            )}
+                            <h4 style={styles.productTitle}>{product.title}</h4>
+                            <p style={styles.productPrice}>€{parseFloat(product.price).toFixed(2)}</p>
+                            {isSelected && <span style={styles.checkmark}>✓</span>}
+                          </div>
+                          <button
+                            style={styles.discoverButton}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(`https://www.pretabebe.com/products/${product.handle}`, '_blank');
+                            }}
+                          >
+                            Scopri di più
+                          </button>
                         </div>
                       );
                     })}
@@ -725,10 +733,15 @@ const styles = {
     backgroundColor: "white",
     borderRadius: "12px",
     textAlign: "center",
-    cursor: "pointer",
     border: "2px solid #f0f0f0",
     transition: "all 0.2s",
     boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+    display: "flex",
+    flexDirection: "column",
+  },
+  productClickArea: {
+    cursor: "pointer",
+    flex: 1,
   },
   productCardSelected: {
     borderColor: "#e74c3c",
@@ -779,6 +792,17 @@ const styles = {
     justifyContent: "center",
     fontSize: "16px",
     fontWeight: "bold",
+  },
+  discoverButton: {
+    marginTop: "10px",
+    padding: "8px 12px",
+    backgroundColor: "#2c3e50",
+    color: "white",
+    border: "none",
+    borderRadius: "6px",
+    fontSize: "12px",
+    cursor: "pointer",
+    transition: "background-color 0.2s",
   },
 
   // Pagination
