@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, ResourceList, Text, Button, Banner } from "@shopify/polaris";
+import { Card, Text, Button, Banner } from "@shopify/polaris";
 import ProductItemCard from "./ProductItemCard.jsx";
 
 const ListDashboard = () => {
@@ -35,21 +35,26 @@ const ListDashboard = () => {
   return (
     <Card.Section>
       {error && <Banner status="critical">{error}</Banner>}
-      <ResourceList
-        resourceName={{ singular: "lista", plural: "liste" }}
-        items={lists}
-        renderItem={(item) => (
-          <ResourceList.Item id={item.id}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <div style={{ flex: 1 }}>
-                <Text variant="headingSm">{item.title}</Text>
-                <Text tone="subdued">{item.customer_email}</Text>
-              </div>
-              <Button onClick={() => loadDetail(item.id)}>Apri</Button>
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        {lists.map((item) => (
+          <div
+            key={item.id}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              padding: "8px 0",
+              borderBottom: "1px solid #eee",
+            }}
+          >
+            <div style={{ flex: 1 }}>
+              <Text variant="headingSm">{item.title}</Text>
+              <Text tone="subdued">{item.customer_email}</Text>
             </div>
-          </ResourceList.Item>
-        )}
-      />
+            <Button onClick={() => loadDetail(item.id)}>Apri</Button>
+          </div>
+        ))}
+      </div>
       {selected && (
         <Card title={`Dettaglio: ${selected.title}`} sectioned>
           <Text tone="subdued">Public URL: /public/gift/{selected.public_url}</Text>
