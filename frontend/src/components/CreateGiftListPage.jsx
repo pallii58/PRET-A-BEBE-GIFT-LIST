@@ -128,11 +128,24 @@ const CreateGiftListPage = () => {
       case "bestselling":
       default:
         // Ordina per numero di volte che il prodotto è stato aggiunto alle liste
-        return sorted.sort((a, b) => {
+        // Prodotti mai selezionati appaiono dopo in ordine casuale
+        const popular = sorted.filter(p => (popularityData[p.id] || 0) > 0);
+        const notPopular = sorted.filter(p => (popularityData[p.id] || 0) === 0);
+        
+        // Ordina i popolari per count decrescente
+        popular.sort((a, b) => {
           const countA = popularityData[a.id] || 0;
           const countB = popularityData[b.id] || 0;
-          return countB - countA; // Più richiesti prima
+          return countB - countA;
         });
+        
+        // Mescola casualmente i non popolari
+        for (let i = notPopular.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [notPopular[i], notPopular[j]] = [notPopular[j], notPopular[i]];
+        }
+        
+        return [...popular, ...notPopular];
     }
   };
 
