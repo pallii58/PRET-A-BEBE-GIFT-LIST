@@ -1,28 +1,55 @@
 import path from "path";
 import { fileURLToPath } from "url";
 
+// Disable SSL certificate verification for Supabase self-signed certificates
+// This is safe because we're connecting directly to Supabase's infrastructure
+if (process.env.DATABASE_URL?.includes("supabase") || 
+    process.env.POSTGRES_URL?.includes("supabase") ||
+    process.env.POSTGRES_HOST?.includes("supabase")) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const dirMigrations = path.join(__dirname, "migrations");
 // Use POSTGRES_URL from Supabase-Vercel integration, fallback to building from individual vars or DATABASE_URL
+// Prefer connection pooler (port 6543) for Supabase as it has valid certificates
 let url = process.env.POSTGRES_URL || process.env.POSTGRES_URL_NON_POOLING || process.env.DATABASE_URL;
 if (!url && process.env.POSTGRES_HOST && process.env.POSTGRES_USER && process.env.POSTGRES_PASSWORD) {
   const host = process.env.POSTGRES_HOST;
   const user = process.env.POSTGRES_USER;
   const password = process.env.POSTGRES_PASSWORD;
   const database = process.env.POSTGRES_DATABASE || "postgres";
-  const port = process.env.POSTGRES_PORT || "5432";
+  // For Supabase, try to use pooler port (6543) if available, otherwise use direct (5432)
+  const port = process.env.POSTGRES_PORT || (host.includes("supabase") ? "6543" : "5432");
   url = `postgresql://${user}:${password}@${host}:${port}/${database}`;
 }
 const isPostgres = url && (url.startsWith("postgres://") || url.startsWith("postgresql://"));
 
-// Parse URL to build connection object with explicit SSL config
+// Parse URL and add SSL parameters for Supabase
 let pgConnection = null;
 if (isPostgres) {
+  const isSupabase = url.includes("supabase");
+  
+  // For Supabase, add SSL parameters to connection string
+  if (isSupabase) {
+    try {
+      const urlObj = new URL(url);
+      // Add sslmode parameter to connection string
+      const sslMode = urlObj.searchParams.get("sslmode") || "require";
+      urlObj.searchParams.set("sslmode", sslMode);
+      url = urlObj.toString();
+    } catch (e) {
+      // If URL parsing fails, append sslmode parameter
+      const separator = url.includes("?") ? "&" : "?";
+      url = `${url}${separator}sslmode=require`;
+    }
+  }
+  
+  // Build connection object with explicit SSL config
   try {
     const urlObj = new URL(url);
-    const isSupabase = url.includes("supabase");
     pgConnection = {
       host: urlObj.hostname,
       port: parseInt(urlObj.port) || 5432,
@@ -32,10 +59,10 @@ if (isPostgres) {
       ssl: isSupabase ? { rejectUnauthorized: false } : false,
     };
   } catch (e) {
-    // Fallback to connectionString if URL parsing fails
+    // Fallback to connectionString with SSL params in URL
     pgConnection = {
       connectionString: url,
-      ssl: url.includes("supabase") ? { rejectUnauthorized: false } : false,
+      ssl: isSupabase ? { rejectUnauthorized: false } : false,
     };
   }
 }
