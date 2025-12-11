@@ -6,7 +6,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const dirMigrations = path.join(__dirname, "../backend/db/migrations");
-const url = process.env.DATABASE_URL;
+// Use POSTGRES_URL from Supabase-Vercel integration, fallback to DATABASE_URL
+const url = process.env.POSTGRES_URL || process.env.DATABASE_URL;
 const isPostgres = url && (url.startsWith("postgres://") || url.startsWith("postgresql://"));
 
 const config = isPostgres
