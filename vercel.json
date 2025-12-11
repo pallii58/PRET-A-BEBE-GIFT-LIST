@@ -17,7 +17,9 @@
     }
   ],
   "rewrites": [
-    { "source": "/public/gift/:slug", "destination": "/api/public/gift/:slug" }
+    { "source": "/api/:path*", "destination": "/api/:path*" },
+    { "source": "/public/gift/:slug", "destination": "/api/public/gift/:slug" },
+    { "source": "/create", "destination": "/index.html" },
+    { "source": "/gift/:slug", "destination": "/index.html" }
   ]
 }
-
