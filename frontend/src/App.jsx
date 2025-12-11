@@ -1,5 +1,5 @@
 import { AppProvider, Card, Button, Text } from "@shopify/polaris";
-import AppBridgeProvider from "@shopify/app-bridge-react";
+import { Provider as AppBridgeProvider } from "@shopify/app-bridge-react";
 import { useMemo, useState } from "react";
 import ListCreator from "./components/ListCreator.jsx";
 import ListDashboard from "./components/ListDashboard.jsx";
