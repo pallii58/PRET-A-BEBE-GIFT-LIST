@@ -1,5 +1,5 @@
 import { AppProvider, Card, Button, Text } from "@shopify/polaris";
-import { Provider as AppBridgeProvider } from "@shopify/app-bridge-react";
+import * as AppBridgeReact from "@shopify/app-bridge-react";
 import { useMemo, useState } from "react";
 import ListCreator from "./components/ListCreator.jsx";
 import ListDashboard from "./components/ListDashboard.jsx";
@@ -11,6 +11,7 @@ const useQueryParam = (key) => {
 };
 
 function EmbeddedWrapper({ children }) {
+  const AppBridgeProvider = AppBridgeReact?.Provider || AppBridgeReact?.default || null;
   const host = useQueryParam("host");
   const apiKey = import.meta.env.VITE_SHOPIFY_API_KEY;
   const appBridgeConfig = useMemo(() => {
