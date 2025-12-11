@@ -1,4 +1,4 @@
-import { Card, FormLayout, TextField, Button, Banner } from "@shopify/polaris";
+import { TextField, Button, Banner } from "@shopify/polaris";
 import { useState } from "react";
 
 const ListCreator = () => {
@@ -23,16 +23,14 @@ const ListCreator = () => {
   };
 
   return (
-    <Card.Section>
+    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       {message && <Banner status={message.status}>{message.text}</Banner>}
-      <FormLayout>
-        <TextField label="Titolo" value={title} onChange={setTitle} />
-        <TextField label="Email cliente" value={email} onChange={setEmail} type="email" />
-        <Button primary onClick={handleCreate}>
-          Crea lista
-        </Button>
-      </FormLayout>
-    </Card.Section>
+      <TextField label="Titolo" value={title} onChange={setTitle} />
+      <TextField label="Email cliente" value={email} onChange={setEmail} type="email" />
+      <Button primary onClick={handleCreate}>
+        Crea lista
+      </Button>
+    </div>
   );
 };
 

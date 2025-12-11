@@ -26,7 +26,7 @@ const PublicGiftPage = () => {
   };
 
   return (
-    <Card.Section>
+    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       {error && <Banner status="critical">{error}</Banner>}
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
         <TextField label="Slug pubblico" value={slug} onChange={setSlug} />
@@ -44,7 +44,7 @@ const PublicGiftPage = () => {
           </div>
         </Card>
       )}
-    </Card.Section>
+    </div>
   );
 };
 

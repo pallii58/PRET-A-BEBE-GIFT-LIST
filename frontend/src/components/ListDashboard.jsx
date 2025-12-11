@@ -33,7 +33,7 @@ const ListDashboard = () => {
   };
 
   return (
-    <Card.Section>
+    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       {error && <Banner status="critical">{error}</Banner>}
       <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
         {lists.map((item) => (
@@ -65,7 +65,7 @@ const ListDashboard = () => {
           </div>
         </Card>
       )}
-    </Card.Section>
+    </div>
   );
 };
 
