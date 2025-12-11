@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 const CreateGiftListPage = () => {
   const [step, setStep] = useState(1); // 1: intro, 2: selezione prodotti, 3: form dati, 4: successo
   const [products, setProducts] = useState([]);
+  const [collections, setCollections] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [listName, setListName] = useState("");
   const [email, setEmail] = useState("");
@@ -10,27 +11,91 @@ const CreateGiftListPage = () => {
   const [error, setError] = useState(null);
   const [createdList, setCreatedList] = useState(null);
   const [copied, setCopied] = useState(false);
+  
+  // Filtri e paginazione
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCollection, setSelectedCollection] = useState(null);
+  const [pageInfo, setPageInfo] = useState({ hasNextPage: false, hasPreviousPage: false });
+  const [cursors, setCursors] = useState([]); // Stack di cursori per navigazione indietro
+  const [currentCursor, setCurrentCursor] = useState(null);
 
-  // Carica i prodotti (per ora mock, poi integreremo Shopify)
+  // Carica collezioni e prodotti
   useEffect(() => {
     if (step === 2) {
+      loadCollections();
       loadProducts();
     }
   }, [step]);
 
-  const loadProducts = async () => {
-    setLoading(true);
+  // Ricarica prodotti quando cambiano i filtri
+  useEffect(() => {
+    if (step === 2) {
+      setCurrentCursor(null);
+      setCursors([]);
+      loadProducts();
+    }
+  }, [searchQuery, selectedCollection]);
+
+  const loadCollections = async () => {
     try {
-      const res = await fetch("/api/products");
+      const res = await fetch("/api/collections");
+      const data = await res.json();
+      if (res.ok) {
+        setCollections(data);
+      }
+    } catch (err) {
+      console.error("Error loading collections:", err);
+    }
+  };
+
+  const loadProducts = async (cursor = null) => {
+    setLoading(true);
+    setError(null);
+    try {
+      let url = "/api/products?limit=100";
+      if (cursor) url += `&cursor=${cursor}`;
+      if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
+      if (selectedCollection) url += `&collection=${encodeURIComponent(selectedCollection)}`;
+
+      const res = await fetch(url);
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Errore nel caricamento");
-      setProducts(data);
+      
+      setProducts(data.products || []);
+      setPageInfo(data.pageInfo || { hasNextPage: false, hasPreviousPage: false });
     } catch (err) {
       console.error("Error loading products:", err);
       setError("Errore nel caricamento dei prodotti");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleNextPage = () => {
+    if (pageInfo.hasNextPage && pageInfo.endCursor) {
+      setCursors([...cursors, currentCursor]);
+      setCurrentCursor(pageInfo.endCursor);
+      loadProducts(pageInfo.endCursor);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (cursors.length > 0) {
+      const newCursors = [...cursors];
+      const prevCursor = newCursors.pop();
+      setCursors(newCursors);
+      setCurrentCursor(prevCursor);
+      loadProducts(prevCursor);
+    }
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    // La ricerca viene gestita dall'useEffect
+  };
+
+  const selectCollection = (handle) => {
+    setSelectedCollection(handle === selectedCollection ? null : handle);
   };
 
   const toggleProduct = (product) => {
@@ -57,7 +122,6 @@ const CreateGiftListPage = () => {
     setError(null);
 
     try {
-      // Crea la lista
       const listRes = await fetch("/api/gift_lists", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -66,7 +130,6 @@ const CreateGiftListPage = () => {
       const listData = await listRes.json();
       if (!listRes.ok) throw new Error(listData.message || "Errore nella creazione");
 
-      // Aggiungi i prodotti alla lista
       for (const product of selectedProducts) {
         await fetch(`/api/gift_lists/${listData.id}/items`, {
           method: "POST",
@@ -135,60 +198,175 @@ const CreateGiftListPage = () => {
         </div>
       )}
 
-      {/* Step 2: Selezione prodotti */}
+      {/* Step 2: Selezione prodotti con sidebar categorie */}
       {step === 2 && (
-        <div style={styles.content}>
-          <div style={styles.card}>
-            <h2 style={styles.title}>Seleziona i prodotti</h2>
-            <p style={styles.description}>
-              Scegli i prodotti che vorresti ricevere in regalo. 
-              Selezionati: <strong>{selectedProducts.length}</strong>
-            </p>
+        <div style={styles.shopLayout}>
+          {/* Sidebar Categorie */}
+          <aside style={styles.sidebar}>
+            <h3 style={styles.sidebarTitle}>Categorie</h3>
+            <div style={styles.categoryList}>
+              <button
+                style={{
+                  ...styles.categoryButton,
+                  ...(selectedCollection === null ? styles.categoryButtonActive : {}),
+                }}
+                onClick={() => selectCollection(null)}
+              >
+                🏠 Tutti i prodotti
+              </button>
+              {collections.map((col) => (
+                <button
+                  key={col.id}
+                  style={{
+                    ...styles.categoryButton,
+                    ...(selectedCollection === col.handle ? styles.categoryButtonActive : {}),
+                  }}
+                  onClick={() => selectCollection(col.handle)}
+                >
+                  {col.title}
+                  <span style={styles.categoryCount}>{col.productsCount}</span>
+                </button>
+              ))}
+            </div>
+            
+            {/* Prodotti selezionati */}
+            <div style={styles.selectedSummary}>
+              <h4 style={styles.selectedTitle}>
+                Selezionati: {selectedProducts.length}
+              </h4>
+              {selectedProducts.length > 0 && (
+                <button
+                  style={styles.continueButtonSidebar}
+                  onClick={() => setStep(3)}
+                >
+                  Continua →
+                </button>
+              )}
+            </div>
+          </aside>
 
-            {loading ? (
-              <p style={styles.loading}>Caricamento prodotti...</p>
-            ) : (
-              <div style={styles.productsGrid}>
-                {products.map((product) => {
-                  const isSelected = selectedProducts.find((p) => p.id === product.id);
-                  return (
-                    <div
-                      key={product.id}
-                      style={{
-                        ...styles.productCard,
-                        ...(isSelected ? styles.productCardSelected : {}),
-                      }}
-                      onClick={() => toggleProduct(product)}
-                    >
-                      {product.image ? (
-                        <img src={product.image} alt={product.title} style={styles.productImage} />
-                      ) : (
-                        <div style={styles.productImagePlaceholder}>📦</div>
-                      )}
-                      <h4 style={styles.productTitle}>{product.title}</h4>
-                      <p style={styles.productPrice}>€{parseFloat(product.price).toFixed(2)}</p>
-                      {isSelected && <span style={styles.checkmark}>✓</span>}
-                    </div>
-                  );
-                })}
+          {/* Area principale prodotti */}
+          <main style={styles.mainContent}>
+            {/* Barra di ricerca */}
+            <div style={styles.searchBar}>
+              <form onSubmit={handleSearch} style={styles.searchForm}>
+                <input
+                  type="text"
+                  placeholder="Cerca prodotti..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={styles.searchInput}
+                />
+                <button type="submit" style={styles.searchButton}>
+                  🔍
+                </button>
+              </form>
+              <div style={styles.selectedBadge}>
+                {selectedProducts.length} selezionati
               </div>
+            </div>
+
+            {/* Titolo sezione */}
+            <div style={styles.sectionHeader}>
+              <h2 style={styles.sectionTitle}>
+                {selectedCollection 
+                  ? collections.find(c => c.handle === selectedCollection)?.title || "Prodotti"
+                  : "Tutti i prodotti"}
+              </h2>
+              <p style={styles.productCount}>
+                {products.length} prodotti mostrati
+              </p>
+            </div>
+
+            {/* Griglia prodotti */}
+            {loading ? (
+              <div style={styles.loadingContainer}>
+                <p style={styles.loading}>⏳ Caricamento prodotti...</p>
+              </div>
+            ) : error ? (
+              <div style={styles.errorContainer}>
+                <p style={styles.error}>{error}</p>
+                <button style={styles.retryButton} onClick={() => loadProducts()}>
+                  Riprova
+                </button>
+              </div>
+            ) : products.length === 0 ? (
+              <div style={styles.emptyContainer}>
+                <p>Nessun prodotto trovato</p>
+              </div>
+            ) : (
+              <>
+                <div style={styles.productsGrid}>
+                  {products.map((product) => {
+                    const isSelected = selectedProducts.find((p) => p.id === product.id);
+                    return (
+                      <div
+                        key={product.id}
+                        style={{
+                          ...styles.productCard,
+                          ...(isSelected ? styles.productCardSelected : {}),
+                        }}
+                        onClick={() => toggleProduct(product)}
+                      >
+                        {product.image ? (
+                          <img src={product.image} alt={product.title} style={styles.productImage} />
+                        ) : (
+                          <div style={styles.productImagePlaceholder}>📦</div>
+                        )}
+                        <h4 style={styles.productTitle}>{product.title}</h4>
+                        <p style={styles.productPrice}>€{parseFloat(product.price).toFixed(2)}</p>
+                        {isSelected && <span style={styles.checkmark}>✓</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Paginazione */}
+                <div style={styles.pagination}>
+                  <button
+                    style={{
+                      ...styles.pageButton,
+                      ...(cursors.length === 0 ? styles.pageButtonDisabled : {}),
+                    }}
+                    onClick={handlePrevPage}
+                    disabled={cursors.length === 0}
+                  >
+                    ← Precedente
+                  </button>
+                  <span style={styles.pageInfo}>
+                    Pagina {cursors.length + 1}
+                  </span>
+                  <button
+                    style={{
+                      ...styles.pageButton,
+                      ...(!pageInfo.hasNextPage ? styles.pageButtonDisabled : {}),
+                    }}
+                    onClick={handleNextPage}
+                    disabled={!pageInfo.hasNextPage}
+                  >
+                    Successiva →
+                  </button>
+                </div>
+              </>
             )}
 
-            {error && <p style={styles.error}>{error}</p>}
-
+            {/* Pulsanti navigazione */}
             <div style={styles.buttonRow}>
               <button style={styles.secondaryButton} onClick={() => setStep(1)}>
-                Indietro
+                ← Indietro
               </button>
               <button
-                style={styles.primaryButton}
+                style={{
+                  ...styles.primaryButton,
+                  ...(selectedProducts.length === 0 ? styles.buttonDisabled : {}),
+                }}
                 onClick={() => setStep(3)}
                 disabled={selectedProducts.length === 0}
               >
-                Continua ({selectedProducts.length} prodotti)
+                Continua con {selectedProducts.length} prodotti →
               </button>
             </div>
-          </div>
+          </main>
         </div>
       )}
 
@@ -226,24 +404,35 @@ const CreateGiftListPage = () => {
             </div>
 
             <div style={styles.summary}>
-              <h4>Riepilogo prodotti selezionati:</h4>
-              {selectedProducts.map((p) => (
-                <p key={p.id} style={styles.summaryItem}>• {p.title}</p>
-              ))}
+              <h4>Riepilogo prodotti selezionati ({selectedProducts.length}):</h4>
+              <div style={styles.summaryGrid}>
+                {selectedProducts.map((p) => (
+                  <div key={p.id} style={styles.summaryItem}>
+                    {p.image && <img src={p.image} alt="" style={styles.summaryImage} />}
+                    <span>{p.title}</span>
+                    <button
+                      style={styles.removeButton}
+                      onClick={() => toggleProduct(p)}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {error && <p style={styles.error}>{error}</p>}
 
             <div style={styles.buttonRow}>
               <button style={styles.secondaryButton} onClick={() => setStep(2)}>
-                Indietro
+                ← Modifica selezione
               </button>
               <button
                 style={styles.primaryButton}
                 onClick={createList}
                 disabled={loading}
               >
-                {loading ? "Creazione..." : "Crea la mia lista"}
+                {loading ? "Creazione..." : "Crea la mia lista 🎁"}
               </button>
             </div>
           </div>
@@ -269,7 +458,7 @@ const CreateGiftListPage = () => {
                 readOnly
               />
               <button style={styles.copyButton} onClick={copyLink}>
-                {copied ? "Copiato!" : "Copia"}
+                {copied ? "✓ Copiato!" : "Copia"}
               </button>
             </div>
 
@@ -283,7 +472,7 @@ const CreateGiftListPage = () => {
               style={styles.secondaryButton}
               onClick={() => window.open(getPublicUrl(), "_blank")}
             >
-              Visualizza la tua lista
+              👁 Visualizza la tua lista
             </button>
           </div>
         </div>
@@ -349,64 +538,177 @@ const styles = {
     padding: 0,
     margin: "24px 0",
   },
-  primaryButton: {
-    display: "block",
+  
+  // Layout Shop con sidebar
+  shopLayout: {
+    display: "flex",
+    maxWidth: "1400px",
+    margin: "0 auto",
+    padding: "20px",
+    gap: "24px",
+  },
+  sidebar: {
+    width: "250px",
+    flexShrink: 0,
+    backgroundColor: "white",
+    borderRadius: "12px",
+    padding: "20px",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+    height: "fit-content",
+    position: "sticky",
+    top: "20px",
+  },
+  sidebarTitle: {
+    margin: "0 0 16px",
+    fontSize: "18px",
+    color: "#2c3e50",
+    borderBottom: "2px solid #e74c3c",
+    paddingBottom: "8px",
+  },
+  categoryList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+  },
+  categoryButton: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "10px 12px",
+    backgroundColor: "transparent",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+    textAlign: "left",
+    fontSize: "14px",
+    color: "#666",
+    transition: "all 0.2s",
+  },
+  categoryButtonActive: {
+    backgroundColor: "#fef5f4",
+    color: "#e74c3c",
+    fontWeight: "bold",
+  },
+  categoryCount: {
+    fontSize: "12px",
+    backgroundColor: "#f0f0f0",
+    padding: "2px 8px",
+    borderRadius: "10px",
+  },
+  selectedSummary: {
+    marginTop: "24px",
+    padding: "16px",
+    backgroundColor: "#fef5f4",
+    borderRadius: "8px",
+  },
+  selectedTitle: {
+    margin: "0 0 12px",
+    fontSize: "16px",
+    color: "#e74c3c",
+  },
+  continueButtonSidebar: {
     width: "100%",
-    padding: "16px 32px",
+    padding: "12px",
     backgroundColor: "#e74c3c",
     color: "white",
     border: "none",
     borderRadius: "8px",
-    fontSize: "18px",
+    cursor: "pointer",
     fontWeight: "bold",
-    cursor: "pointer",
-    transition: "background-color 0.3s",
   },
-  secondaryButton: {
-    padding: "12px 24px",
-    backgroundColor: "#ecf0f1",
-    color: "#2c3e50",
-    border: "none",
-    borderRadius: "8px",
-    fontSize: "16px",
-    cursor: "pointer",
+
+  // Main content
+  mainContent: {
+    flex: 1,
+    minWidth: 0,
   },
-  buttonRow: {
+  searchBar: {
     display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "20px",
     gap: "16px",
-    justifyContent: "center",
-    marginTop: "24px",
   },
+  searchForm: {
+    display: "flex",
+    flex: 1,
+    maxWidth: "400px",
+  },
+  searchInput: {
+    flex: 1,
+    padding: "12px 16px",
+    border: "2px solid #e0e0e0",
+    borderRadius: "8px 0 0 8px",
+    fontSize: "14px",
+    outline: "none",
+  },
+  searchButton: {
+    padding: "12px 20px",
+    backgroundColor: "#2c3e50",
+    color: "white",
+    border: "none",
+    borderRadius: "0 8px 8px 0",
+    cursor: "pointer",
+    fontSize: "16px",
+  },
+  selectedBadge: {
+    padding: "8px 16px",
+    backgroundColor: "#e74c3c",
+    color: "white",
+    borderRadius: "20px",
+    fontWeight: "bold",
+    fontSize: "14px",
+  },
+  sectionHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "20px",
+  },
+  sectionTitle: {
+    margin: 0,
+    fontSize: "24px",
+    color: "#2c3e50",
+  },
+  productCount: {
+    margin: 0,
+    color: "#999",
+    fontSize: "14px",
+  },
+
+  // Products grid
   productsGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-    gap: "16px",
+    gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+    gap: "20px",
     marginBottom: "24px",
   },
   productCard: {
     position: "relative",
     padding: "16px",
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "white",
     borderRadius: "12px",
     textAlign: "center",
     cursor: "pointer",
-    border: "2px solid transparent",
-    transition: "all 0.3s",
+    border: "2px solid #f0f0f0",
+    transition: "all 0.2s",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
   },
   productCardSelected: {
     borderColor: "#e74c3c",
     backgroundColor: "#fef5f4",
+    boxShadow: "0 4px 12px rgba(231,76,60,0.2)",
   },
   productImage: {
     width: "100%",
-    height: "120px",
+    height: "140px",
     objectFit: "cover",
     borderRadius: "8px",
   },
   productImagePlaceholder: {
     width: "100%",
-    height: "120px",
-    backgroundColor: "#f0f0f0",
+    height: "140px",
+    backgroundColor: "#f5f5f5",
     borderRadius: "8px",
     display: "flex",
     alignItems: "center",
@@ -415,29 +717,92 @@ const styles = {
   },
   productTitle: {
     fontSize: "14px",
-    margin: "8px 0 4px",
+    margin: "12px 0 6px",
     color: "#2c3e50",
+    lineHeight: 1.3,
+    height: "36px",
+    overflow: "hidden",
   },
   productPrice: {
-    fontSize: "16px",
+    fontSize: "18px",
     fontWeight: "bold",
     color: "#e74c3c",
     margin: 0,
   },
   checkmark: {
     position: "absolute",
-    top: "8px",
-    right: "8px",
+    top: "10px",
+    right: "10px",
     backgroundColor: "#e74c3c",
     color: "white",
-    width: "24px",
-    height: "24px",
+    width: "28px",
+    height: "28px",
     borderRadius: "50%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    fontSize: "16px",
+    fontWeight: "bold",
+  },
+
+  // Pagination
+  pagination: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: "16px",
+    marginBottom: "24px",
+  },
+  pageButton: {
+    padding: "10px 20px",
+    backgroundColor: "#2c3e50",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
     fontSize: "14px",
   },
+  pageButtonDisabled: {
+    backgroundColor: "#ccc",
+    cursor: "not-allowed",
+  },
+  pageInfo: {
+    color: "#666",
+    fontSize: "14px",
+  },
+
+  // Buttons
+  primaryButton: {
+    padding: "16px 32px",
+    backgroundColor: "#e74c3c",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    fontSize: "16px",
+    fontWeight: "bold",
+    cursor: "pointer",
+  },
+  buttonDisabled: {
+    backgroundColor: "#ccc",
+    cursor: "not-allowed",
+  },
+  secondaryButton: {
+    padding: "14px 24px",
+    backgroundColor: "#ecf0f1",
+    color: "#2c3e50",
+    border: "none",
+    borderRadius: "8px",
+    fontSize: "14px",
+    cursor: "pointer",
+  },
+  buttonRow: {
+    display: "flex",
+    gap: "16px",
+    justifyContent: "center",
+    marginTop: "24px",
+  },
+
+  // Form
   form: {
     marginBottom: "24px",
   },
@@ -458,16 +823,47 @@ const styles = {
     fontSize: "16px",
     boxSizing: "border-box",
   },
+
+  // Summary
   summary: {
     backgroundColor: "#f9f9f9",
-    padding: "16px",
-    borderRadius: "8px",
-    marginBottom: "16px",
+    padding: "20px",
+    borderRadius: "12px",
+    marginBottom: "20px",
+  },
+  summaryGrid: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    maxHeight: "300px",
+    overflowY: "auto",
   },
   summaryItem: {
-    margin: "4px 0",
-    color: "#666",
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    padding: "8px",
+    backgroundColor: "white",
+    borderRadius: "8px",
   },
+  summaryImage: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "4px",
+    objectFit: "cover",
+  },
+  removeButton: {
+    marginLeft: "auto",
+    padding: "4px 8px",
+    backgroundColor: "#ff6b6b",
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "12px",
+  },
+
+  // Success
   successIcon: {
     fontSize: "64px",
     textAlign: "center",
@@ -492,30 +888,54 @@ const styles = {
     border: "none",
     borderRadius: "8px",
     cursor: "pointer",
+    fontWeight: "bold",
   },
   shareButtons: {
     marginBottom: "24px",
   },
   whatsappButton: {
     width: "100%",
-    padding: "14px",
+    padding: "16px",
     backgroundColor: "#25D366",
     color: "white",
     border: "none",
     borderRadius: "8px",
     fontSize: "16px",
     cursor: "pointer",
+    fontWeight: "bold",
+  },
+
+  // States
+  loadingContainer: {
+    textAlign: "center",
+    padding: "60px",
+  },
+  loading: {
+    fontSize: "18px",
+    color: "#666",
+  },
+  errorContainer: {
+    textAlign: "center",
+    padding: "40px",
   },
   error: {
     color: "#e74c3c",
-    textAlign: "center",
     marginBottom: "16px",
   },
-  loading: {
-    textAlign: "center",
-    color: "#666",
-    padding: "40px",
+  retryButton: {
+    padding: "10px 20px",
+    backgroundColor: "#e74c3c",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
   },
+  emptyContainer: {
+    textAlign: "center",
+    padding: "60px",
+    color: "#999",
+  },
+
   footer: {
     textAlign: "center",
     padding: "20px",
@@ -525,4 +945,3 @@ const styles = {
 };
 
 export default CreateGiftListPage;
-
