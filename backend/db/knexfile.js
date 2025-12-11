@@ -22,9 +22,9 @@ const config = isPostgres
       client: "pg",
       connection: {
         connectionString: url,
-        ssl: process.env.NODE_ENV === "production" 
-          ? { rejectUnauthorized: false, require: true }
-          : { rejectUnauthorized: false },
+        ssl: url.includes("supabase") 
+          ? { rejectUnauthorized: false }
+          : false,
       },
       pool: { min: 0, max: 10 },
       migrations: { directory: dirMigrations },
