@@ -284,14 +284,16 @@ const CreateGiftListPage = () => {
 
             {/* Titolo sezione */}
             <div style={styles.sectionHeader}>
-              <h2 style={styles.sectionTitle}>
-                {selectedCollection 
-                  ? collections.find(c => c.handle === selectedCollection)?.title || "Prodotti"
-                  : "Tutti i prodotti"}
-              </h2>
-              <p style={styles.productCount}>
-                {products.length} prodotti mostrati
-              </p>
+              <div>
+                <h2 style={styles.sectionTitle}>
+                  Pagina {cursors.length + 1} di {selectedCollection 
+                    ? collections.find(c => c.handle === selectedCollection)?.title || "Prodotti"
+                    : "Tutti i prodotti"}
+                </h2>
+                <p style={styles.productCount}>
+                  {products.length} prodotti mostrati
+                </p>
+              </div>
             </div>
 
             {/* Area scroll prodotti */}
