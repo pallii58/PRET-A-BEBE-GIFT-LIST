@@ -40,11 +40,14 @@ const CreateGiftListPage = () => {
     try {
       const res = await fetch("/api/collections");
       const data = await res.json();
-      if (res.ok) {
+      console.log("[Frontend] Collections response:", data);
+      if (res.ok && Array.isArray(data)) {
         setCollections(data);
+      } else {
+        console.error("[Frontend] Collections error:", data);
       }
     } catch (err) {
-      console.error("Error loading collections:", err);
+      console.error("[Frontend] Error loading collections:", err);
     }
   };
 
