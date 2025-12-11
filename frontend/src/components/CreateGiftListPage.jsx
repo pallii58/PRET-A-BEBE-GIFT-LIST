@@ -299,7 +299,8 @@ const CreateGiftListPage = () => {
               {/* Griglia prodotti */}
               {loading ? (
                 <div style={styles.loadingContainer}>
-                  <p style={styles.loading}>⏳ Caricamento prodotti...</p>
+                  <div style={styles.spinnerLarge}></div>
+                  <p style={styles.loaderText}>Caricamento prodotti...</p>
                 </div>
               ) : error ? (
                 <div style={styles.errorContainer}>
@@ -949,12 +950,11 @@ const styles = {
 
   // States
   loadingContainer: {
-    textAlign: "center",
-    padding: "60px",
-  },
-  loading: {
-    fontSize: "18px",
-    color: "#666",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "80px 20px",
   },
   errorContainer: {
     textAlign: "center",
@@ -996,6 +996,14 @@ const styles = {
     height: "40px",
     border: "4px solid #f0f0f0",
     borderTop: "4px solid #e74c3c",
+    borderRadius: "50%",
+    animation: "spin 1s linear infinite",
+  },
+  spinnerLarge: {
+    width: "60px",
+    height: "60px",
+    border: "5px solid #f0f0f0",
+    borderTop: "5px solid #e74c3c",
     borderRadius: "50%",
     animation: "spin 1s linear infinite",
   },
