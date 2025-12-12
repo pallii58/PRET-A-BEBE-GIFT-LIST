@@ -19,29 +19,14 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
   const [cursors, setCursors] = useState([]); // Stack di cursori per navigazione indietro
   const [currentCursor, setCurrentCursor] = useState(null);
   const [loadingCollections, setLoadingCollections] = useState(false);
-  const [sortBy, setSortBy] = useState("bestselling"); // bestselling, price-asc, price-desc, name-asc, name-desc
-  const [popularityData, setPopularityData] = useState({}); // product_id -> count
 
-  // Carica collezioni, prodotti e dati popolarità
+  // Carica collezioni e prodotti
   useEffect(() => {
     if (step === 2) {
       loadCollections();
       loadProducts();
-      loadPopularityData();
     }
   }, [step]);
-
-  const loadPopularityData = async () => {
-    try {
-      const res = await fetch("/api/popular-products");
-      const data = await res.json();
-      if (res.ok) {
-        setPopularityData(data);
-      }
-    } catch (err) {
-      console.error("Error loading popularity data:", err);
-    }
-  };
 
   // Ricarica prodotti quando cambiano i filtri
   useEffect(() => {
@@ -112,44 +97,6 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
     e.preventDefault();
     // La ricerca viene gestita dall'useEffect
   };
-
-  // Ordina i prodotti in base al filtro selezionato
-  const getSortedProducts = () => {
-    const sorted = [...products];
-    switch (sortBy) {
-      case "price-asc":
-        return sorted.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-      case "price-desc":
-        return sorted.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-      case "name-asc":
-        return sorted.sort((a, b) => a.title.localeCompare(b.title));
-      case "name-desc":
-        return sorted.sort((a, b) => b.title.localeCompare(a.title));
-      case "bestselling":
-      default:
-        // Ordina per numero di volte che il prodotto è stato aggiunto alle liste
-        // Prodotti mai selezionati appaiono dopo in ordine casuale
-        const popular = sorted.filter(p => (popularityData[p.id] || 0) > 0);
-        const notPopular = sorted.filter(p => (popularityData[p.id] || 0) === 0);
-        
-        // Ordina i popolari per count decrescente
-        popular.sort((a, b) => {
-          const countA = popularityData[a.id] || 0;
-          const countB = popularityData[b.id] || 0;
-          return countB - countA;
-        });
-        
-        // Mescola casualmente i non popolari
-        for (let i = notPopular.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [notPopular[i], notPopular[j]] = [notPopular[j], notPopular[i]];
-        }
-        
-        return [...popular, ...notPopular];
-    }
-  };
-
-  const sortedProducts = getSortedProducts();
 
   const selectCollection = (handle) => {
     setSelectedCollection(handle === selectedCollection ? null : handle);
@@ -334,17 +281,6 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
                   🔍
                 </button>
               </form>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                style={styles.sortSelect}
-              >
-                <option value="bestselling">Più richiesti</option>
-                <option value="price-asc">Prezzo: basso → alto</option>
-                <option value="price-desc">Prezzo: alto → basso</option>
-                <option value="name-asc">Nome: A → Z</option>
-                <option value="name-desc">Nome: Z → A</option>
-              </select>
               {selectedProducts.length > 0 && (
                 <div style={styles.selectedBadge}>
                   {selectedProducts.length} selezionati
@@ -386,7 +322,7 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
               ) : (
                 <>
                   <div style={styles.productsGrid}>
-                    {sortedProducts.map((product) => {
+                    {products.map((product) => {
                       const isSelected = selectedProducts.find((p) => p.id === product.id);
                       return (
                         <div
@@ -771,16 +707,6 @@ const styles = {
     borderRadius: "0 8px 8px 0",
     cursor: "pointer",
     fontSize: "16px",
-  },
-  sortSelect: {
-    padding: "12px 16px",
-    border: "2px solid #e0e0e0",
-    borderRadius: "8px",
-    fontSize: "14px",
-    backgroundColor: "white",
-    cursor: "pointer",
-    outline: "none",
-    minWidth: "180px",
   },
   selectedBadge: {
     padding: "8px 16px",
