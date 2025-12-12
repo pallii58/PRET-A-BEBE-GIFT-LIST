@@ -2,7 +2,6 @@ import { AppProvider, Card, Button, Text } from "@shopify/polaris";
 import { useState, useEffect } from "react";
 import ListCreator from "./components/ListCreator.jsx";
 import ListDashboard from "./components/ListDashboard.jsx";
-import PublicGiftPage from "./components/PublicGiftPage.jsx";
 import CreateGiftListPage from "./components/CreateGiftListPage.jsx";
 import ViewGiftListPage from "./components/ViewGiftListPage.jsx";
 import LoginPage from "./components/LoginPage.jsx";
@@ -123,7 +122,6 @@ function App() {
   const menu = [
     { id: "dashboard", label: "📋 Dashboard" },
     { id: "create", label: "➕ Crea lista" },
-    { id: "public", label: "🔗 Pagine pubbliche" },
   ];
 
   // Aggiungi gestione utenti solo per admin
@@ -217,11 +215,6 @@ function App() {
             {selected === "create" && (
               <Card title="Crea nuova lista (Admin)" sectioned>
                 <ListCreator />
-              </Card>
-            )}
-            {selected === "public" && (
-              <Card title="Pagine pubbliche" sectioned>
-                <PublicGiftPage />
               </Card>
             )}
             {selected === "users" && user.role === "admin" && (
