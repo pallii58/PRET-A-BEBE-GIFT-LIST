@@ -11,12 +11,41 @@ const ProductItemCard = ({ item, onAddToCart, onRemove }) => {
       border: "1px solid #ddd",
       borderRadius: "8px"
     }}>
+      {/* Immagine prodotto */}
+      {item.product_image ? (
+        <img 
+          src={item.product_image} 
+          alt={item.product_title || "Prodotto"} 
+          style={{ 
+            width: "60px", 
+            height: "60px", 
+            objectFit: "contain",
+            borderRadius: "6px",
+            backgroundColor: "#f9f9f9"
+          }} 
+        />
+      ) : (
+        <div style={{ 
+          width: "60px", 
+          height: "60px", 
+          backgroundColor: "#f0f0f0",
+          borderRadius: "6px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "24px"
+        }}>
+          📦
+        </div>
+      )}
+      
       <div style={{ flex: 1 }}>
         <Text as="h3" variant="headingSm">
-          Product ID: {item.product_id}
+          {item.product_title || `Prodotto #${item.product_id}`}
         </Text>
         <Text as="p" tone="subdued">
-          Variant ID: {item.variant_id} | Quantità: {item.quantity}
+          {item.product_price && `€${parseFloat(item.product_price).toFixed(2)} · `}
+          Qtà: {item.quantity}
         </Text>
       </div>
       <Badge tone={item.purchased ? "success" : "attention"}>
