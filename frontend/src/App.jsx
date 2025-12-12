@@ -1,6 +1,5 @@
 import { AppProvider, Card, Button, Text } from "@shopify/polaris";
 import { useState, useEffect } from "react";
-import ListCreator from "./components/ListCreator.jsx";
 import ListDashboard from "./components/ListDashboard.jsx";
 import CreateGiftListPage from "./components/CreateGiftListPage.jsx";
 import ViewGiftListPage from "./components/ViewGiftListPage.jsx";
@@ -129,6 +128,40 @@ function App() {
     menu.push({ id: "users", label: "Collaboratori" });
   }
 
+  // Se "Crea lista" è selezionato, mostra la pagina completa di creazione
+  if (selected === "create") {
+    return (
+      <div>
+        <div style={{ 
+          padding: "12px 20px", 
+          backgroundColor: "#2c3e50", 
+          display: "flex", 
+          justifyContent: "space-between",
+          alignItems: "center"
+        }}>
+          <button 
+            onClick={() => setSelected("dashboard")}
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "#e74c3c",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "14px"
+            }}
+          >
+            ← Torna al Pannello Admin
+          </button>
+          <span style={{ color: "white", fontSize: "14px" }}>
+            Loggato come: {user.name}
+          </span>
+        </div>
+        <CreateGiftListPage />
+      </div>
+    );
+  }
+
   return (
     <AppProvider i18n={{}}>
       <div style={{ maxWidth: 1200, margin: "20px auto", padding: "12px" }}>
@@ -194,11 +227,6 @@ function App() {
             {selected === "dashboard" && (
               <Card title="Dashboard liste" sectioned>
                 <ListDashboard />
-              </Card>
-            )}
-            {selected === "create" && (
-              <Card title="Crea nuova lista (Admin)" sectioned>
-                <ListCreator />
               </Card>
             )}
             {selected === "users" && user.role === "admin" && (
