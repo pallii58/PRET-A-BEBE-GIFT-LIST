@@ -51,15 +51,38 @@ export default async function handler(req, res) {
   }
 
   try {
-    const variantIds = payload.line_items?.map((li) => String(li.variant_id)) || [];
-    if (variantIds.length === 0) return res.status(200).send("No items");
+    const lineItems = payload.line_items || [];
+    if (lineItems.length === 0) return res.status(200).send("No items");
 
-    const { error: updateError } = await supabase
-      .from("gift_list_items")
-      .update({ purchased: true })
-      .in("variant_id", variantIds);
-    
-    if (updateError) throw updateError;
+    let updatedCount = 0;
+
+    for (const li of lineItems) {
+      // Cerca la property _gift_list_item_id nelle properties del line item
+      const giftListItemId = li.properties?.find(p => p.name === "_gift_list_item_id")?.value;
+      
+      if (giftListItemId) {
+        // Aggiorna l'item specifico della lista regalo
+        const { error } = await supabase
+          .from("gift_list_items")
+          .update({ purchased: true })
+          .eq("id", parseInt(giftListItemId));
+        
+        if (!error) updatedCount++;
+        console.log(`[Webhook] Marked gift list item ${giftListItemId} as purchased`);
+      } else {
+        // Fallback: cerca per variant_id (potrebbe marcare più items)
+        const { error } = await supabase
+          .from("gift_list_items")
+          .update({ purchased: true })
+          .eq("variant_id", String(li.variant_id))
+          .eq("purchased", false);
+        
+        if (!error) updatedCount++;
+        console.log(`[Webhook] Marked items with variant ${li.variant_id} as purchased (fallback)`);
+      }
+    }
+
+    console.log(`[Webhook] Order ${payload.id} processed, ${updatedCount} items updated`);
     return res.status(200).send("ok");
   } catch (err) {
     console.error("Failed to process webhook", err);
