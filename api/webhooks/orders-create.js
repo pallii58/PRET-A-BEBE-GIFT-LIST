@@ -12,37 +12,44 @@ const SHOPIFY_ADMIN_TOKEN = process.env.SHOPIFY_ADMIN_TOKEN;
 
 // Aggiunge tag all'ordine via Shopify Admin API
 const addTagsToOrder = async (orderId, tags) => {
+  console.log(`[Webhook] addTagsToOrder called - orderId: ${orderId}, tags: ${tags.join(", ")}`);
+  console.log(`[Webhook] SHOPIFY_STORE_DOMAIN: ${SHOPIFY_STORE_DOMAIN ? "SET" : "MISSING"}`);
+  console.log(`[Webhook] SHOPIFY_ADMIN_TOKEN: ${SHOPIFY_ADMIN_TOKEN ? "SET" : "MISSING"}`);
+  
   if (!SHOPIFY_STORE_DOMAIN || !SHOPIFY_ADMIN_TOKEN) {
     console.log("[Webhook] Missing Shopify credentials, skipping tag update");
     return;
   }
 
+  const url = `https://${SHOPIFY_STORE_DOMAIN}/admin/api/2024-01/orders/${orderId}.json`;
+  console.log(`[Webhook] API URL: ${url}`);
+
   try {
-    const response = await fetch(
-      `https://${SHOPIFY_STORE_DOMAIN}/admin/api/2024-01/orders/${orderId}.json`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Shopify-Access-Token": SHOPIFY_ADMIN_TOKEN,
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": SHOPIFY_ADMIN_TOKEN,
+      },
+      body: JSON.stringify({
+        order: {
+          id: orderId,
+          tags: tags.join(", "),
         },
-        body: JSON.stringify({
-          order: {
-            id: orderId,
-            tags: tags.join(", "),
-          },
-        }),
-      }
-    );
+      }),
+    });
+
+    const responseText = await response.text();
+    console.log(`[Webhook] Shopify API response status: ${response.status}`);
+    console.log(`[Webhook] Shopify API response: ${responseText}`);
 
     if (response.ok) {
-      console.log(`[Webhook] Added tags to order ${orderId}: ${tags.join(", ")}`);
+      console.log(`[Webhook] SUCCESS - Added tags to order ${orderId}: ${tags.join(", ")}`);
     } else {
-      const error = await response.text();
-      console.error(`[Webhook] Failed to add tags to order ${orderId}:`, error);
+      console.error(`[Webhook] FAILED to add tags to order ${orderId}:`, responseText);
     }
   } catch (err) {
-    console.error(`[Webhook] Error adding tags to order ${orderId}:`, err);
+    console.error(`[Webhook] ERROR adding tags to order ${orderId}:`, err.message);
   }
 };
 
@@ -90,15 +97,20 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log(`[Webhook] Processing order ${payload.id}`);
     const lineItems = payload.line_items || [];
+    console.log(`[Webhook] Line items count: ${lineItems.length}`);
+    
     if (lineItems.length === 0) return res.status(200).send("No items");
 
     let updatedCount = 0;
     const giftListNames = new Set(); // Raccoglie i nomi delle liste per i tag
 
     for (const li of lineItems) {
+      console.log(`[Webhook] Line item: variant_id=${li.variant_id}, properties=${JSON.stringify(li.properties)}`);
       // Cerca il nome della lista regalo nel line item
       const giftListName = li.properties?.find(p => p.name === "Lista Regalo")?.value;
+      console.log(`[Webhook] Found gift list name: ${giftListName || "NONE"}`);
       
       if (giftListName) {
         giftListNames.add(giftListName);
