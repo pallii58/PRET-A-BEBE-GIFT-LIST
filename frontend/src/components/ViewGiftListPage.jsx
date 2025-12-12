@@ -26,15 +26,15 @@ const ViewGiftListPage = ({ publicUrl }) => {
 
   const addToCart = (item) => {
     // Apri il prodotto su pretabebe.com con il variant nel carrello
-    // Aggiungi properties per tracciare la lista regalo
-    const properties = encodeURIComponent(`properties[_gift_list_id]=${list.id}&properties[_gift_list_name]=${list.title}&properties[_gift_list_item_id]=${item.id}`);
-    const shopUrl = `https://www.pretabebe.com/cart/add?id=${item.variant_id}&quantity=${item.quantity}&${properties}`;
+    // Aggiungi properties per tracciare la lista regalo (properties nascoste con _)
+    const listName = encodeURIComponent(list.title);
+    const shopUrl = `https://www.pretabebe.com/cart/add?id=${item.variant_id}&quantity=${item.quantity}&properties[_gift_list_id]=${list.id}&properties[_gift_list_name]=${listName}&properties[_gift_list_item_id]=${item.id}`;
     window.open(shopUrl, "_blank");
   };
 
   const openProduct = (item) => {
-    // Apri la pagina prodotto con parametri per tracciare la lista
-    const url = `https://www.pretabebe.com/products/${item.product_handle}?gift_list=${list.id}&gift_list_item=${item.id}`;
+    // Apri la pagina prodotto
+    const url = `https://www.pretabebe.com/products/${item.product_handle}`;
     window.open(url, "_blank");
   };
 
