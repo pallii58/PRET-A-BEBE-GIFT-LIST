@@ -157,7 +157,7 @@ const LoginPage = ({ onLogin }) => {
                 style={styles.input}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@pretabebe.com"
+                placeholder=""
                 autoComplete="email"
               />
             </div>
@@ -187,7 +187,7 @@ const LoginPage = ({ onLogin }) => {
                 style={styles.input}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@pretabebe.com"
+                placeholder=""
                 autoComplete="email"
               />
             </div>
