@@ -120,13 +120,13 @@ function App() {
 
   // Admin Dashboard (autenticato)
   const menu = [
-    { id: "dashboard", label: "📋 Dashboard" },
-    { id: "create", label: "➕ Crea lista" },
+    { id: "dashboard", label: "Dashboard" },
+    { id: "create", label: "Crea lista" },
   ];
 
   // Aggiungi gestione utenti solo per admin
   if (user.role === "admin") {
-    menu.push({ id: "users", label: "👥 Collaboratori" });
+    menu.push({ id: "users", label: "Collaboratori" });
   }
 
   return (
@@ -156,7 +156,7 @@ function App() {
             <div style={{ textAlign: "right" }}>
               <Text variant="bodyMd" fontWeight="semibold">{user.name}</Text>
               <Text tone="subdued" variant="bodySm">
-                {user.role === "admin" ? "👑 Amministratore" : "👤 Collaboratore"}
+                {user.role === "admin" ? "Amministratore" : "Collaboratore"}
               </Text>
             </div>
             <Button onClick={handleLogout}>Esci</Button>
@@ -175,7 +175,7 @@ function App() {
         }}>
           <Text>Pagine pubbliche:</Text>
           <a href="/create" target="_blank" rel="noopener noreferrer" style={{ color: "#0070f3" }}>
-            🎁 Crea la tua Lista Regali
+            Crea la tua Lista Regali
           </a>
         </div>
 

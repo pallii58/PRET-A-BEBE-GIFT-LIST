@@ -302,7 +302,7 @@ const UserManagement = () => {
                       fontWeight: "600",
                     }}
                   >
-                    {user.role === "admin" ? "👑 Admin" : "👤 Collaboratore"}
+                    {user.role === "admin" ? "Admin" : "Collaboratore"}
                   </span>
                   <span style={{ fontSize: "11px", color: "#999" }}>
                     Ultimo accesso: {formatDate(user.last_login)}
@@ -310,9 +310,9 @@ const UserManagement = () => {
                 </div>
               </div>
               <div style={{ display: "flex", gap: "8px" }}>
-                <Button onClick={() => openEditModal(user)}>✏️ Modifica</Button>
+                <Button onClick={() => openEditModal(user)}>Modifica</Button>
                 <Button destructive onClick={() => setDeletingUser(user)}>
-                  🗑️
+                  Elimina
                 </Button>
               </div>
             </div>

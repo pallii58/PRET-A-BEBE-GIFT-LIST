@@ -212,10 +212,10 @@ const ListDashboard = () => {
                 Copia URL
               </Button>
               <Button onClick={() => openEditModal(item)}>
-                ✏️ Modifica
+                Modifica
               </Button>
               <Button destructive onClick={() => openDeleteModal(item)}>
-                🗑️ Elimina
+                Elimina
               </Button>
             </div>
           </div>
@@ -242,8 +242,8 @@ const ListDashboard = () => {
           
           {/* Bottoni modifica/elimina nel dettaglio */}
           <div style={{ marginBottom: "16px", display: "flex", gap: "8px" }}>
-            <Button onClick={() => openEditModal(selected)}>✏️ Modifica lista</Button>
-            <Button destructive onClick={() => openDeleteModal(selected)}>🗑️ Elimina lista</Button>
+            <Button onClick={() => openEditModal(selected)}>Modifica lista</Button>
+            <Button destructive onClick={() => openDeleteModal(selected)}>Elimina lista</Button>
           </div>
           
           {/* Form per aggiungere prodotto */}
