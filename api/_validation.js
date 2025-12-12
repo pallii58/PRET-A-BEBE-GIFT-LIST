@@ -9,5 +9,9 @@ export const giftListItemSchema = Joi.object({
   product_id: Joi.string().required(),
   variant_id: Joi.string().required(),
   quantity: Joi.number().integer().min(1).default(1),
+  product_title: Joi.string().allow("", null),
+  product_image: Joi.string().allow("", null),
+  product_price: Joi.string().allow("", null),
+  product_handle: Joi.string().allow("", null),
 });
 

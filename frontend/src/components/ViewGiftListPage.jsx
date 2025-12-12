@@ -93,18 +93,33 @@ const ViewGiftListPage = ({ publicUrl }) => {
               <div style={styles.itemsGrid}>
                 {availableItems.map((item) => (
                   <div key={item.id} style={styles.itemCard}>
-                    <div style={styles.itemImage}>🎀</div>
+                    {item.product_image ? (
+                      <img src={item.product_image} alt={item.product_title} style={styles.itemImageImg} />
+                    ) : (
+                      <div style={styles.itemImage}>🎀</div>
+                    )}
                     <div style={styles.itemInfo}>
-                      <h4 style={styles.itemTitle}>Prodotto #{item.product_id}</h4>
-                      <p style={styles.itemVariant}>Variante: {item.variant_id}</p>
-                      <p style={styles.itemQty}>Quantità: {item.quantity}</p>
+                      <h4 style={styles.itemTitle}>{item.product_title || `Prodotto #${item.product_id}`}</h4>
+                      {item.product_price && (
+                        <p style={styles.itemPrice}>€{parseFloat(item.product_price).toFixed(2)}</p>
+                      )}
                     </div>
-                    <button
-                      style={styles.buyButton}
-                      onClick={() => addToCart(item)}
-                    >
-                      🛒 Regala questo
-                    </button>
+                    <div style={styles.itemActions}>
+                      {item.product_handle && (
+                        <button
+                          style={styles.discoverButton}
+                          onClick={() => window.open(`https://www.pretabebe.com/products/${item.product_handle}`, "_blank")}
+                        >
+                          Scopri di più
+                        </button>
+                      )}
+                      <button
+                        style={styles.buyButton}
+                        onClick={() => addToCart(item)}
+                      >
+                        Regala questo
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -120,10 +135,16 @@ const ViewGiftListPage = ({ publicUrl }) => {
               <div style={styles.itemsGrid}>
                 {purchasedItems.map((item) => (
                   <div key={item.id} style={styles.itemCardPurchased}>
-                    <div style={styles.itemImage}>✅</div>
+                    {item.product_image ? (
+                      <img src={item.product_image} alt={item.product_title} style={styles.itemImageImgPurchased} />
+                    ) : (
+                      <div style={styles.itemImage}>✅</div>
+                    )}
                     <div style={styles.itemInfo}>
-                      <h4 style={styles.itemTitle}>Prodotto #{item.product_id}</h4>
-                      <p style={styles.itemVariant}>Variante: {item.variant_id}</p>
+                      <h4 style={styles.itemTitle}>{item.product_title || `Prodotto #${item.product_id}`}</h4>
+                      {item.product_price && (
+                        <p style={styles.itemPrice}>€{parseFloat(item.product_price).toFixed(2)}</p>
+                      )}
                     </div>
                     <span style={styles.purchasedBadge}>Già regalato!</span>
                   </div>
@@ -251,8 +272,28 @@ const styles = {
   },
   itemImage: {
     fontSize: "40px",
-    width: "60px",
-    textAlign: "center",
+    width: "80px",
+    height: "80px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#f5f5f5",
+    borderRadius: "8px",
+  },
+  itemImageImg: {
+    width: "80px",
+    height: "80px",
+    objectFit: "contain",
+    borderRadius: "8px",
+    backgroundColor: "#fff",
+  },
+  itemImageImgPurchased: {
+    width: "80px",
+    height: "80px",
+    objectFit: "contain",
+    borderRadius: "8px",
+    backgroundColor: "#fff",
+    opacity: 0.6,
   },
   itemInfo: {
     flex: 1,
@@ -262,15 +303,25 @@ const styles = {
     fontSize: "18px",
     color: "#2c3e50",
   },
-  itemVariant: {
-    margin: 0,
-    fontSize: "14px",
-    color: "#999",
-  },
-  itemQty: {
+  itemPrice: {
     margin: "4px 0 0",
+    fontSize: "16px",
+    fontWeight: "bold",
+    color: "#e74c3c",
+  },
+  itemActions: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  },
+  discoverButton: {
+    padding: "10px 20px",
+    backgroundColor: "#34495e",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
     fontSize: "14px",
-    color: "#666",
+    cursor: "pointer",
   },
   buyButton: {
     padding: "12px 24px",

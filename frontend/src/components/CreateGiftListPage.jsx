@@ -142,6 +142,10 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
             product_id: product.id,
             variant_id: product.variant_id,
             quantity: 1,
+            product_title: product.title,
+            product_image: product.image,
+            product_price: product.price,
+            product_handle: product.handle,
           }),
         });
       }
