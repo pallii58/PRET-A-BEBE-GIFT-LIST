@@ -42,7 +42,7 @@ function App() {
     }
 
     try {
-      const res = await fetch("/api/auth/verify", {
+      const res = await fetch("/api/auth?action=verify", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -71,7 +71,7 @@ function App() {
     const token = localStorage.getItem("adminToken");
     
     try {
-      await fetch("/api/auth/logout", {
+      await fetch("/api/auth?action=logout", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

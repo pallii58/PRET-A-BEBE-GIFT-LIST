@@ -20,7 +20,7 @@ const LoginPage = ({ onLogin }) => {
     setError(null);
 
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch("/api/auth?action=login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -55,7 +55,7 @@ const LoginPage = ({ onLogin }) => {
     setError(null);
 
     try {
-      const res = await fetch("/api/auth/magic-link", {
+      const res = await fetch("/api/auth?action=magic-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -86,7 +86,7 @@ const LoginPage = ({ onLogin }) => {
     setError(null);
 
     try {
-      const res = await fetch("/api/auth/verify-otp", {
+      const res = await fetch("/api/auth?action=verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code: otpCode }),

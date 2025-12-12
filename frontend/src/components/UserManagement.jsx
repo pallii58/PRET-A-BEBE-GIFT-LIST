@@ -37,7 +37,7 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/users", {
+      const res = await fetch("/api/admin", {
         headers: getAuthHeaders(),
       });
       const data = await res.json();
@@ -65,7 +65,7 @@ const UserManagement = () => {
     setError(null);
 
     try {
-      const res = await fetch("/api/admin/users", {
+      const res = await fetch("/api/admin", {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({
@@ -109,7 +109,7 @@ const UserManagement = () => {
       const updateData = { name: editName, role: editRole };
       if (editPassword) updateData.password = editPassword;
 
-      const res = await fetch(`/api/admin/users/${editingUser.id}`, {
+      const res = await fetch(`/api/admin?id=${editingUser.id}`, {
         method: "PUT",
         headers: getAuthHeaders(),
         body: JSON.stringify(updateData),
@@ -136,7 +136,7 @@ const UserManagement = () => {
     setError(null);
 
     try {
-      const res = await fetch(`/api/admin/users/${deletingUser.id}`, {
+      const res = await fetch(`/api/admin?id=${deletingUser.id}`, {
         method: "DELETE",
         headers: getAuthHeaders(),
       });
