@@ -7,6 +7,45 @@ export const config = {
   },
 };
 
+const SHOPIFY_STORE_DOMAIN = process.env.SHOPIFY_STORE_DOMAIN;
+const SHOPIFY_ADMIN_TOKEN = process.env.SHOPIFY_ADMIN_TOKEN;
+
+// Aggiunge tag all'ordine via Shopify Admin API
+const addTagsToOrder = async (orderId, tags) => {
+  if (!SHOPIFY_STORE_DOMAIN || !SHOPIFY_ADMIN_TOKEN) {
+    console.log("[Webhook] Missing Shopify credentials, skipping tag update");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `https://${SHOPIFY_STORE_DOMAIN}/admin/api/2024-01/orders/${orderId}.json`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Access-Token": SHOPIFY_ADMIN_TOKEN,
+        },
+        body: JSON.stringify({
+          order: {
+            id: orderId,
+            tags: tags.join(", "),
+          },
+        }),
+      }
+    );
+
+    if (response.ok) {
+      console.log(`[Webhook] Added tags to order ${orderId}: ${tags.join(", ")}`);
+    } else {
+      const error = await response.text();
+      console.error(`[Webhook] Failed to add tags to order ${orderId}:`, error);
+    }
+  } catch (err) {
+    console.error(`[Webhook] Error adding tags to order ${orderId}:`, err);
+  }
+};
+
 const readBody = (req) =>
   new Promise((resolve, reject) => {
     let data = [];
@@ -55,10 +94,16 @@ export default async function handler(req, res) {
     if (lineItems.length === 0) return res.status(200).send("No items");
 
     let updatedCount = 0;
+    const giftListNames = new Set(); // Raccoglie i nomi delle liste per i tag
 
     for (const li of lineItems) {
-      // Cerca la property _gift_list_item_id nelle properties del line item
+      // Cerca le properties della lista regalo nel line item
       const giftListItemId = li.properties?.find(p => p.name === "_gift_list_item_id")?.value;
+      const giftListName = li.properties?.find(p => p.name === "_gift_list_name")?.value;
+      
+      if (giftListName) {
+        giftListNames.add(`Lista Regalo: ${giftListName}`);
+      }
       
       if (giftListItemId) {
         // Aggiorna l'item specifico della lista regalo
@@ -80,6 +125,13 @@ export default async function handler(req, res) {
         if (!error) updatedCount++;
         console.log(`[Webhook] Marked items with variant ${li.variant_id} as purchased (fallback)`);
       }
+    }
+
+    // Aggiungi tag all'ordine con i nomi delle liste regalo
+    if (giftListNames.size > 0) {
+      const existingTags = payload.tags ? payload.tags.split(", ") : [];
+      const allTags = [...existingTags, ...Array.from(giftListNames)];
+      await addTagsToOrder(payload.id, allTags);
     }
 
     console.log(`[Webhook] Order ${payload.id} processed, ${updatedCount} items updated`);
