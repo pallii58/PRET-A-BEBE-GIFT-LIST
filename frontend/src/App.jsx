@@ -163,22 +163,6 @@ function App() {
           </div>
         </div>
 
-        {/* Link alle pagine pubbliche */}
-        <div style={{ 
-          marginBottom: "16px", 
-          padding: "12px", 
-          backgroundColor: "#e8f4fd", 
-          borderRadius: "8px",
-          display: "flex",
-          gap: "16px",
-          alignItems: "center"
-        }}>
-          <Text>Pagine pubbliche:</Text>
-          <a href="/create" target="_blank" rel="noopener noreferrer" style={{ color: "#0070f3" }}>
-            Crea la tua Lista Regali
-          </a>
-        </div>
-
         <div style={{ display: "flex", gap: "16px" }}>
           <nav
             style={{
