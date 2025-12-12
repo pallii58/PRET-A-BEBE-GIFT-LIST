@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, Text, Button, Banner, TextField } from "@shopify/polaris";
+import { Card, Text, Button, Banner, TextField, Modal } from "@shopify/polaris";
 import ProductItemCard from "./ProductItemCard.jsx";
 
 const ListDashboard = () => {
@@ -13,6 +13,18 @@ const ListDashboard = () => {
   const [variantId, setVariantId] = useState("");
   const [quantity, setQuantity] = useState("1");
   const [adding, setAdding] = useState(false);
+  
+  // Edit modal state
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingList, setEditingList] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [saving, setSaving] = useState(false);
+  
+  // Delete confirmation state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deletingList, setDeletingList] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchLists = async () => {
     try {
@@ -99,6 +111,73 @@ const ListDashboard = () => {
     alert("URL copiato negli appunti!");
   };
 
+  // Apri modal modifica
+  const openEditModal = (list) => {
+    setEditingList(list);
+    setEditTitle(list.title);
+    setEditEmail(list.customer_email);
+    setEditModalOpen(true);
+  };
+
+  // Salva modifiche lista
+  const saveListChanges = async () => {
+    if (!editingList) return;
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/gift_lists/${editingList.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: editTitle,
+          customer_email: editEmail,
+        }),
+      });
+      if (!res.ok) throw new Error("Errore nel salvataggio");
+      setSuccess("Lista aggiornata con successo!");
+      setEditModalOpen(false);
+      setEditingList(null);
+      fetchLists();
+      if (selected && selected.id === editingList.id) {
+        loadDetail(editingList.id);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Apri modal conferma eliminazione
+  const openDeleteModal = (list) => {
+    setDeletingList(list);
+    setDeleteModalOpen(true);
+  };
+
+  // Elimina lista
+  const deleteList = async () => {
+    if (!deletingList) return;
+    setDeleting(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/gift_lists/${deletingList.id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Errore nell'eliminazione");
+      setSuccess("Lista eliminata con successo!");
+      setDeleteModalOpen(false);
+      setDeletingList(null);
+      if (selected && selected.id === deletingList.id) {
+        setSelected(null);
+      }
+      fetchLists();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       {error && <Banner status="critical" onDismiss={() => setError(null)}>{error}</Banner>}
@@ -124,13 +203,19 @@ const ListDashboard = () => {
               <Text variant="headingSm">{item.title}</Text>
               <Text tone="subdued">{item.customer_email}</Text>
             </div>
-            <div style={{ display: "flex", gap: "8px" }}>
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
               <Button onClick={() => loadDetail(item.id)}>Dettagli</Button>
               <Button primary onClick={() => openPublicPage(item.public_url)}>
                 Apri pagina
               </Button>
               <Button onClick={() => copyPublicUrl(item.public_url)}>
                 Copia URL
+              </Button>
+              <Button onClick={() => openEditModal(item)}>
+                ✏️ Modifica
+              </Button>
+              <Button destructive onClick={() => openDeleteModal(item)}>
+                🗑️ Elimina
               </Button>
             </div>
           </div>
@@ -153,6 +238,12 @@ const ListDashboard = () => {
                 https://pret-a-bebe-gift-list.vercel.app/public/gift/{selected.public_url}
               </a>
             </Text>
+          </div>
+          
+          {/* Bottoni modifica/elimina nel dettaglio */}
+          <div style={{ marginBottom: "16px", display: "flex", gap: "8px" }}>
+            <Button onClick={() => openEditModal(selected)}>✏️ Modifica lista</Button>
+            <Button destructive onClick={() => openDeleteModal(selected)}>🗑️ Elimina lista</Button>
           </div>
           
           {/* Form per aggiungere prodotto */}
@@ -217,6 +308,93 @@ const ListDashboard = () => {
             ))}
           </div>
         </Card>
+      )}
+
+      {/* Modal Modifica Lista */}
+      {editModalOpen && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(0,0,0,0.5)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "12px",
+            padding: "24px",
+            maxWidth: "500px",
+            width: "90%",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.2)"
+          }}>
+            <Text variant="headingLg">Modifica Lista</Text>
+            <div style={{ marginTop: "16px", marginBottom: "16px" }}>
+              <TextField
+                label="Nome della lista"
+                value={editTitle}
+                onChange={setEditTitle}
+              />
+            </div>
+            <div style={{ marginBottom: "24px" }}>
+              <TextField
+                label="Email cliente"
+                value={editEmail}
+                onChange={setEditEmail}
+                type="email"
+              />
+            </div>
+            <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
+              <Button onClick={() => setEditModalOpen(false)}>Annulla</Button>
+              <Button primary onClick={saveListChanges} loading={saving}>
+                Salva modifiche
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Conferma Eliminazione */}
+      {deleteModalOpen && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(0,0,0,0.5)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "12px",
+            padding: "24px",
+            maxWidth: "400px",
+            width: "90%",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.2)"
+          }}>
+            <Text variant="headingLg">Conferma eliminazione</Text>
+            <div style={{ marginTop: "16px", marginBottom: "24px" }}>
+              <Text>
+                Sei sicuro di voler eliminare la lista "<strong>{deletingList?.title}</strong>"? 
+                Questa azione è irreversibile e rimuoverà anche tutti i prodotti associati.
+              </Text>
+            </div>
+            <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
+              <Button onClick={() => setDeleteModalOpen(false)}>Annulla</Button>
+              <Button destructive onClick={deleteList} loading={deleting}>
+                Elimina lista
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
