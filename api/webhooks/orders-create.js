@@ -98,10 +98,10 @@ export default async function handler(req, res) {
 
     for (const li of lineItems) {
       // Cerca il nome della lista regalo nel line item
-      const giftListName = li.properties?.find(p => p.name === "_gift_list_name")?.value;
+      const giftListName = li.properties?.find(p => p.name === "Lista Regalo")?.value;
       
       if (giftListName) {
-        giftListNames.add(`Lista Regalo: ${giftListName}`);
+        giftListNames.add(giftListName);
         
         // Marca come acquistato l'item con questo variant_id nella lista con questo nome
         const { error } = await supabase
