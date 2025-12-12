@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
-const CreateGiftListPage = () => {
-  const [step, setStep] = useState(1); // 1: intro, 2: selezione prodotti, 3: form dati, 4: successo
+const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
+  const [step, setStep] = useState(embedded ? 2 : 1); // 1: intro, 2: selezione prodotti, 3: form dati, 4: successo
   const [products, setProducts] = useState([]);
   const [collections, setCollections] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -201,6 +201,10 @@ const CreateGiftListPage = () => {
 
       setCreatedList(listData);
       setStep(4);
+      // Callback per modalità embedded
+      if (onListCreated) {
+        onListCreated(listData);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -225,15 +229,17 @@ const CreateGiftListPage = () => {
   };
 
   return (
-    <div style={styles.container}>
-      {/* Header */}
-      <div style={styles.header}>
-        <h1 style={styles.logo}>PRET A BEBÈ</h1>
-        <p style={styles.subtitle}>Lista Regali</p>
-      </div>
+    <div style={embedded ? styles.containerEmbedded : styles.container}>
+      {/* Header - solo se non embedded */}
+      {!embedded && (
+        <div style={styles.header}>
+          <h1 style={styles.logo}>PRET A BEBÈ</h1>
+          <p style={styles.subtitle}>Lista Regali</p>
+        </div>
+      )}
 
-      {/* Step 1: Introduzione */}
-      {step === 1 && (
+      {/* Step 1: Introduzione - solo se non embedded */}
+      {step === 1 && !embedded && (
         <div style={styles.content}>
           <div style={styles.card}>
             <h2 style={styles.title}>🎁 Crea la tua Lista Regali</h2>
@@ -574,10 +580,12 @@ const CreateGiftListPage = () => {
         </div>
       )}
 
-      {/* Footer */}
-      <div style={styles.footer}>
-        <p>© 2025 PRET A BEBÈ - Tutti i diritti riservati</p>
-      </div>
+      {/* Footer - solo se non embedded */}
+      {!embedded && (
+        <div style={styles.footer}>
+          <p>© 2025 PRET A BEBÈ - Tutti i diritti riservati</p>
+        </div>
+      )}
     </div>
   );
 };
@@ -587,6 +595,11 @@ const styles = {
     minHeight: "100vh",
     backgroundColor: "#fdf8f5",
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+  },
+  containerEmbedded: {
+    backgroundColor: "#fdf8f5",
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    minHeight: "600px",
   },
   header: {
     backgroundColor: "#2c3e50",
