@@ -176,31 +176,33 @@ function App() {
         </div>
 
         <div style={{ display: "flex", gap: "16px" }}>
-          <nav
-            style={{
-              width: "220px",
-              padding: "12px",
-              border: "1px solid #e5e5e5",
-              borderRadius: "8px",
-              background: "#fafafa",
-            }}
-          >
-            <Text as="h2" variant="headingSm">
-              Menu Admin
-            </Text>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "12px" }}>
-              {menu.map((item) => (
-                <Button
-                  key={item.id}
-                  fullWidth
-                  primary={selected === item.id}
-                  onClick={() => setSelected(item.id)}
-                >
-                  {item.label}
-                </Button>
-              ))}
-            </div>
-          </nav>
+          {route.page !== "admin_list_detail" && (
+            <nav
+              style={{
+                width: "220px",
+                padding: "12px",
+                border: "1px solid #e5e5e5",
+                borderRadius: "8px",
+                background: "#fafafa",
+              }}
+            >
+              <Text as="h2" variant="headingSm">
+                Menu Admin
+              </Text>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "12px" }}>
+                {menu.map((item) => (
+                  <Button
+                    key={item.id}
+                    fullWidth
+                    primary={selected === item.id}
+                    onClick={() => setSelected(item.id)}
+                  >
+                    {item.label}
+                  </Button>
+                ))}
+              </div>
+            </nav>
+          )}
 
           <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "16px" }}>
             {selected === "dashboard" && (
