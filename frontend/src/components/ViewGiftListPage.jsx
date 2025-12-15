@@ -4,6 +4,8 @@ const ViewGiftListPage = ({ publicUrl }) => {
   const [list, setList] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [gifterName, setGifterName] = useState("");
+  const [gifterError, setGifterError] = useState(null);
 
   useEffect(() => {
     loadList();
@@ -25,9 +27,16 @@ const ViewGiftListPage = ({ publicUrl }) => {
   };
 
   const addToCart = (item) => {
+    if (!gifterName.trim()) {
+      setGifterError("Inserisci il tuo nome prima di procedere all'acquisto");
+      return;
+    }
+    setGifterError(null);
+
     // Apri il prodotto su pretabebe.com con il variant nel carrello
     const listName = encodeURIComponent(list.title);
-    const shopUrl = `https://www.pretabebe.com/cart/add?id=${item.variant_id}&quantity=${item.quantity}&properties[Lista Regalo]=${listName}`;
+    const fromName = encodeURIComponent(gifterName.trim());
+    const shopUrl = `https://www.pretabebe.com/cart/add?id=${item.variant_id}&quantity=${item.quantity}&properties[Lista Regalo]=${listName}&properties[Da]=${fromName}`;
     window.open(shopUrl, "_blank");
   };
 
@@ -90,6 +99,32 @@ const ViewGiftListPage = ({ publicUrl }) => {
             Ecco la lista dei desideri! Scegli un regalo da acquistare 
             e renderai felice qualcuno di speciale.
           </p>
+
+          {/* Campo nome di chi regala */}
+          <div style={{ marginBottom: "24px" }}>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: 600, color: "#2c3e50" }}>
+              Il tuo nome (verrà indicato sull'ordine)
+            </label>
+            <input
+              type="text"
+              value={gifterName}
+              onChange={(e) => setGifterName(e.target.value)}
+              placeholder="es. Zia Anna"
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "8px",
+                border: "2px solid #ecf0f1",
+                fontSize: "16px",
+                boxSizing: "border-box",
+              }}
+            />
+            {gifterError && (
+              <p style={{ marginTop: "8px", color: "#e74c3c", fontSize: "14px" }}>
+                {gifterError}
+              </p>
+            )}
+          </div>
 
           {/* Prodotti disponibili */}
           {availableItems.length > 0 && (
