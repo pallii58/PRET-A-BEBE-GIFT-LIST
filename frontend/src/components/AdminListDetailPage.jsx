@@ -144,7 +144,7 @@ const AdminListDetailPage = ({ listId }) => {
 
   if (!list) {
     return (
-      <div style={{ maxWidth: 1200, margin: "20px auto", padding: "12px" }}>
+      <div style={{ maxWidth: 1200, margin: "20px 0", padding: "12px" }}>
         {error && (
           <Banner status="critical" onDismiss={() => setError(null)}>
             {error}
@@ -156,7 +156,7 @@ const AdminListDetailPage = ({ listId }) => {
   }
 
   return (
-    <div style={{ maxWidth: 1200, margin: "20px auto", padding: "12px" }}>
+    <div style={{ maxWidth: 1200, margin: "20px 0", padding: "12px" }}>
       {/* Header con back */}
       <div
         style={{
@@ -167,7 +167,12 @@ const AdminListDetailPage = ({ listId }) => {
         }}
       >
         <div>
-          <Button onClick={() => window.history.back()}>&larr; Torna alle liste</Button>
+          <Button
+            onClick={() => window.history.back()}
+            style={{ marginBottom: "30px" }}
+          >
+            &larr; Torna alle liste
+          </Button>
           <Text as="h1" variant="headingLg">
             Dettaglio lista
           </Text>
