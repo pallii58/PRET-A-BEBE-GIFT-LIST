@@ -35,5 +35,43 @@ export default async function handler(req, res) {
     }
   }
 
+  if (req.method === "PUT") {
+    const { items } = req.body || {};
+
+    if (!Array.isArray(items)) {
+      return res.status(400).json({ message: "Items array is required" });
+    }
+
+    try {
+      // Delete existing items for the list
+      const { error: deleteError } = await supabase
+        .from("gift_list_items")
+        .delete()
+        .eq("gift_list_id", id);
+
+      if (deleteError) throw deleteError;
+
+      if (items.length === 0) {
+        return res.json({ items: [] });
+      }
+
+      const payload = items.map((item) => ({
+        ...item,
+        gift_list_id: id,
+      }));
+
+      const { data, error: insertError } = await supabase
+        .from("gift_list_items")
+        .insert(payload)
+        .select();
+
+      if (insertError) throw insertError;
+      return res.json({ items: data || [] });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Failed to replace items" });
+    }
+  }
+
   return res.status(405).json({ message: "Method not allowed" });
 }

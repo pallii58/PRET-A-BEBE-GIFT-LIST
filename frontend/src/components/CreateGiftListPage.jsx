@@ -11,6 +11,8 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
   const [error, setError] = useState(null);
   const [createdList, setCreatedList] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editListId, setEditListId] = useState(null);
   
   // Filtri e paginazione
   const [searchQuery, setSearchQuery] = useState("");
@@ -19,6 +21,23 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
   const [cursors, setCursors] = useState([]); // Stack di cursori per navigazione indietro
   const [currentCursor, setCurrentCursor] = useState(null);
   const [loadingCollections, setLoadingCollections] = useState(false);
+
+  // Controlla se siamo in modalità modifica (querystring ?edit=ID)
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const edit = params.get("edit");
+      if (edit) {
+        setEditMode(true);
+        setEditListId(edit);
+        setStep(2);
+        loadExistingList(edit);
+      }
+    } catch (err) {
+      console.error("Error reading edit param", err);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Carica collezioni e prodotti
   useEffect(() => {
@@ -49,6 +68,35 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
       console.error("[Frontend] Error loading collections:", err);
     } finally {
       setLoadingCollections(false);
+    }
+  };
+
+  const loadExistingList = async (id) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/gift_lists/${id}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Errore nel caricamento della lista");
+
+      setListName(data.title || "");
+      setEmail(data.customer_email || "");
+
+      // Pre-seleziona i prodotti partendo dagli items esistenti
+      const preselected = (data.items || []).map((item) => ({
+        id: item.product_id,
+        variant_id: item.variant_id,
+        title: item.product_title,
+        image: item.product_image,
+        price: item.product_price,
+        handle: item.product_handle,
+      }));
+      setSelectedProducts(preselected);
+    } catch (err) {
+      console.error("Error loading existing list:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -112,7 +160,7 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
     });
   };
 
-  const createList = async () => {
+  const submitList = async () => {
     if (!listName || !email) {
       setError("Inserisci nome lista e email");
       return;
@@ -126,28 +174,61 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
     setError(null);
 
     try {
-      const listRes = await fetch("/api/gift_lists", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: listName, customer_email: email }),
-      });
-      const listData = await listRes.json();
-      if (!listRes.ok) throw new Error(listData.message || "Errore nella creazione");
+      let listData;
 
-      for (const product of selectedProducts) {
-        await fetch(`/api/gift_lists/${listData.id}/items`, {
+      if (editMode && editListId) {
+        // Aggiorna lista esistente (titolo/email + slug)
+        const updateRes = await fetch(`/api/gift_lists/${editListId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: listName, customer_email: email }),
+        });
+        listData = await updateRes.json();
+        if (!updateRes.ok) throw new Error(listData.message || "Errore nell'aggiornamento della lista");
+
+        // Sostituisci completamente gli items
+        const itemsPayload = selectedProducts.map((product) => ({
+          product_id: product.id,
+          variant_id: product.variant_id,
+          quantity: 1,
+          product_title: product.title,
+          product_image: product.image,
+          product_price: product.price,
+          product_handle: product.handle,
+        }));
+
+        const itemsRes = await fetch(`/api/gift_lists/${editListId}/items`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ items: itemsPayload }),
+        });
+        const itemsData = await itemsRes.json();
+        if (!itemsRes.ok) throw new Error(itemsData.message || "Errore nell'aggiornamento dei prodotti");
+      } else {
+        // Crea nuova lista
+        const listRes = await fetch("/api/gift_lists", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            product_id: product.id,
-            variant_id: product.variant_id,
-            quantity: 1,
-            product_title: product.title,
-            product_image: product.image,
-            product_price: product.price,
-            product_handle: product.handle,
-          }),
+          body: JSON.stringify({ title: listName, customer_email: email }),
         });
+        listData = await listRes.json();
+        if (!listRes.ok) throw new Error(listData.message || "Errore nella creazione");
+
+        for (const product of selectedProducts) {
+          await fetch(`/api/gift_lists/${listData.id}/items`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              product_id: product.id,
+              variant_id: product.variant_id,
+              quantity: 1,
+              product_title: product.title,
+              product_image: product.image,
+              product_price: product.price,
+              product_handle: product.handle,
+            }),
+          });
+        }
       }
 
       setCreatedList(listData);
@@ -471,10 +552,16 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
               </button>
               <button
                 style={styles.primaryButton}
-                onClick={createList}
+                onClick={submitList}
                 disabled={loading}
               >
-                {loading ? "Creazione..." : "Crea la mia lista 🎁"}
+                {loading
+                  ? editMode
+                    ? "Salvataggio..."
+                    : "Creazione..."
+                  : editMode
+                    ? "Salva modifiche alla lista"
+                    : "Crea la mia lista 🎁"}
               </button>
             </div>
           </div>
