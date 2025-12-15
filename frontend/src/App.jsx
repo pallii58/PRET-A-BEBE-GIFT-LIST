@@ -137,8 +137,7 @@ function App() {
   // Admin Dashboard (autenticato)
   const menu = [
     { id: "dashboard", label: "Dashboard" },
-    { id: "create", label: "Crea una lista" },
-    { id: "lists", label: "Le tue liste" },
+    { id: "create", label: "Crea lista" },
   ];
 
   // Aggiungi gestione utenti solo per admin
@@ -209,30 +208,16 @@ function App() {
 
           <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "16px" }}>
             {selected === "dashboard" && (
-              <Card title="Dashboard" sectioned>
-                <Text>
-                  Benvenuto nella <strong>Lista Regali Pret a Bebe</strong>. Usa il menu a sinistra per
-                  creare nuove liste regalo e gestire le liste esistenti.
-                </Text>
-                <div style={{ marginTop: "16px", display: "flex", gap: "8px" }}>
-                  <Button primary onClick={() => setSelected("create")}>
-                    Crea una lista
-                  </Button>
-                  <Button onClick={() => setSelected("lists")}>Le tue liste</Button>
-                </div>
+              <Card title="Dashboard liste" sectioned>
+                <ListDashboard />
               </Card>
             )}
             {selected === "create" && (
-              <Card title="Crea una lista" sectioned>
-                <CreateGiftListPage
-                  embedded={true}
-                  onListCreated={() => setSelected("lists")}
+              <Card title="Crea nuova lista" sectioned>
+                <CreateGiftListPage 
+                  embedded={true} 
+                  onListCreated={() => setSelected("dashboard")}
                 />
-              </Card>
-            )}
-            {selected === "lists" && (
-              <Card title="Le tue liste" sectioned>
-                <ListDashboard />
               </Card>
             )}
             {selected === "users" && user.role === "admin" && (
