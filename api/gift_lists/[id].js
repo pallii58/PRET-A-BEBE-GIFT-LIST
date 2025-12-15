@@ -1,5 +1,45 @@
 import supabase from "../_supabase.js";
 
+const slugify = (title) => {
+  return title
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+};
+
+const generatePublicUrl = async (title, currentId) => {
+  const baseSlug = slugify(title) || "lista-regali";
+  let slug = baseSlug;
+  let counter = 2;
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const { data, error } = await supabase
+      .from("gift_lists")
+      .select("id")
+      .eq("public_url", slug)
+      .neq("id", currentId)
+      .limit(1);
+
+    if (error) {
+      break;
+    }
+
+    if (!data || data.length === 0) {
+      break;
+    }
+
+    slug = `${baseSlug}-${counter}`;
+    counter += 1;
+  }
+
+  return slug;
+};
+
 export default async function handler(req, res) {
   const { id } = req.query;
 
@@ -34,7 +74,10 @@ export default async function handler(req, res) {
       const { title, customer_email } = req.body;
       
       const updateData = {};
-      if (title) updateData.title = title;
+      if (title) {
+        updateData.title = title;
+        updateData.public_url = await generatePublicUrl(title, id);
+      }
       if (customer_email) updateData.customer_email = customer_email;
       
       if (Object.keys(updateData).length === 0) {

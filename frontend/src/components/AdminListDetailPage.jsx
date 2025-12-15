@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Card, Text, Button, Banner } from "@shopify/polaris";
+import { Card, Text, Button, Banner, TextField } from "@shopify/polaris";
 import ProductItemCard from "./ProductItemCard.jsx";
 
 const AdminListDetailPage = ({ listId }) => {
   const [list, setList] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   // Edit modal state
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -104,6 +105,14 @@ const AdminListDetailPage = ({ listId }) => {
     }
   };
 
+  const handleCopyUrl = () => {
+    if (!list) return;
+    const url = `https://giftlist.pretabebe.it/lista/${list.public_url}`;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   if (!list) {
     return (
       <div style={{ maxWidth: 1200, margin: "20px 0", padding: "12px" }}>
@@ -159,15 +168,20 @@ const AdminListDetailPage = ({ listId }) => {
         </div>
         <div style={{ marginBottom: "16px" }}>
           <Text variant="headingXs">URL pubblico:</Text>
-          <Text tone="subdued">
-            <a
-              href={`https://giftlist.pretabebe.it/lista/${list.public_url}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              https://giftlist.pretabebe.it/lista/{list.public_url}
-            </a>
-          </Text>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+            <Text tone="subdued">
+              <a
+                href={`https://giftlist.pretabebe.it/lista/${list.public_url}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                https://giftlist.pretabebe.it/lista/{list.public_url}
+              </a>
+            </Text>
+            <Button size="slim" onClick={handleCopyUrl}>
+              {copied ? "Copiato" : "Copia link"}
+            </Button>
+          </div>
         </div>
 
         {/* Bottoni modifica/elimina nel dettaglio */}
