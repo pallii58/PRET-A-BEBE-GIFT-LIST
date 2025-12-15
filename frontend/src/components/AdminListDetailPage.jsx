@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, Text, Button, Banner, TextField } from "@shopify/polaris";
+import { Card, Text, Button, Banner } from "@shopify/polaris";
 import ProductItemCard from "./ProductItemCard.jsx";
 
 const AdminListDetailPage = ({ listId }) => {
@@ -7,12 +7,6 @@ const AdminListDetailPage = ({ listId }) => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [copied, setCopied] = useState(false);
-
-  // Edit modal state
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editTitle, setEditTitle] = useState("");
-  const [editEmail, setEditEmail] = useState("");
-  const [saving, setSaving] = useState(false);
 
   // Delete confirmation state
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -46,6 +40,24 @@ const AdminListDetailPage = ({ listId }) => {
       });
       if (!res.ok) throw new Error("Errore nella rimozione");
       setSuccess("Prodotto rimosso dalla lista!");
+      await loadDetail();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const markItemAvailable = async (itemId) => {
+    if (!list) return;
+    setError(null);
+    try {
+      const res = await fetch(`/api/gift_lists/${list.id}/items/${itemId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ purchased: false }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Errore nell'aggiornamento");
+      setSuccess("Prodotto rimesso disponibile.");
       await loadDetail();
     } catch (err) {
       setError(err.message);
@@ -186,7 +198,9 @@ const AdminListDetailPage = ({ listId }) => {
 
         {/* Bottoni modifica/elimina nel dettaglio */}
         <div style={{ marginBottom: "16px", display: "flex", gap: "8px" }}>
-          <Button onClick={openEditModal}>Modifica lista</Button>
+          <Button onClick={() => (window.location.href = `/create?edit=${list.id}`)}>
+            Modifica lista
+          </Button>
           <Button destructive onClick={openDeleteModal}>
             Elimina lista
           </Button>
@@ -205,63 +219,12 @@ const AdminListDetailPage = ({ listId }) => {
             <ProductItemCard
               key={item.id}
               item={item}
+              onMarkAvailable={item.purchased ? () => markItemAvailable(item.id) : undefined}
               onRemove={() => removeProduct(item.id)}
             />
           ))}
         </div>
       </Card>
-
-      {/* Modal Modifica Lista */}
-      {editModalOpen && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "white",
-              borderRadius: "12px",
-              padding: "24px",
-              maxWidth: "500px",
-              width: "90%",
-              boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
-            }}
-          >
-            <Text variant="headingLg">Modifica Lista</Text>
-            <div style={{ marginTop: "16px", marginBottom: "16px" }}>
-              <TextField
-                label="Nome della lista"
-                value={editTitle}
-                onChange={setEditTitle}
-              />
-            </div>
-            <div style={{ marginBottom: "24px" }}>
-              <TextField
-                label="Email cliente"
-                value={editEmail}
-                onChange={setEditEmail}
-                type="email"
-              />
-            </div>
-            <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
-              <Button onClick={() => setEditModalOpen(false)}>Annulla</Button>
-              <Button primary onClick={saveListChanges} loading={saving}>
-                Salva modifiche
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Modal Conferma Eliminazione */}
       {deleteModalOpen && (

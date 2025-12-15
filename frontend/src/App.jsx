@@ -5,7 +5,6 @@ import CreateGiftListPage from "./components/CreateGiftListPage.jsx";
 import ViewGiftListPage from "./components/ViewGiftListPage.jsx";
 import LoginPage from "./components/LoginPage.jsx";
 import UserManagement from "./components/UserManagement.jsx";
-import AdminListDetailPage from "./components/AdminListDetailPage.jsx";
 
 function App() {
   const [selected, setSelected] = useState("dashboard");
@@ -24,7 +23,9 @@ function App() {
     }
 
     if (path.startsWith("/lista/") || path.startsWith("/gift/")) {
-      const publicUrl = path.replace(/^\/(lista|gift)\//, "").replace("/", "");
+      const publicUrl = path
+        .replace(/^\/(lista|gift)\//, "")
+        .replace("/", "");
       setRoute({ page: "view", params: { publicUrl } });
       setCheckingAuth(false);
       return;
@@ -202,30 +203,23 @@ function App() {
           </nav>
 
           <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "16px" }}>
-            {route.page === "admin_list_detail" && route.params.id ? (
-              // Pagina dettaglio lista: occupa tutta l'area di destra
-              <AdminListDetailPage listId={route.params.id} />
-            ) : (
-              <>
-                {selected === "dashboard" && (
-                  <Card title="Dashboard liste" sectioned>
-                    <ListDashboard />
-                  </Card>
-                )}
-                {selected === "create" && (
-                  <Card title="Crea nuova lista" sectioned>
-                    <CreateGiftListPage 
-                      embedded={true} 
-                      onListCreated={() => setSelected("dashboard")}
-                    />
-                  </Card>
-                )}
-                {selected === "users" && user.role === "admin" && (
-                  <Card title="Gestione Collaboratori" sectioned>
-                    <UserManagement />
-                  </Card>
-                )}
-              </>
+            {selected === "dashboard" && (
+              <Card title="Dashboard liste" sectioned>
+                <ListDashboard />
+              </Card>
+            )}
+            {selected === "create" && (
+              <Card title="Crea nuova lista" sectioned>
+                <CreateGiftListPage 
+                  embedded={true} 
+                  onListCreated={() => setSelected("dashboard")}
+                />
+              </Card>
+            )}
+            {selected === "users" && user.role === "admin" && (
+              <Card title="Gestione Collaboratori" sectioned>
+                <UserManagement />
+              </Card>
             )}
           </div>
         </div>

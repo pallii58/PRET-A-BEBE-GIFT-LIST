@@ -1,6 +1,6 @@
 import { Badge, Button, Text } from "@shopify/polaris";
 
-const ProductItemCard = ({ item, onAddToCart, onRemove }) => {
+const ProductItemCard = ({ item, onAddToCart, onRemove, onMarkAvailable }) => {
   return (
     <div style={{ 
       display: "flex", 
@@ -54,6 +54,11 @@ const ProductItemCard = ({ item, onAddToCart, onRemove }) => {
       {onAddToCart && !item.purchased && (
         <Button size="slim" onClick={() => onAddToCart(item)}>
           Aggiungi al carrello
+        </Button>
+      )}
+      {onMarkAvailable && item.purchased && (
+        <Button size="slim" onClick={onMarkAvailable}>
+          Rendi disponibile
         </Button>
       )}
       {onRemove && (
