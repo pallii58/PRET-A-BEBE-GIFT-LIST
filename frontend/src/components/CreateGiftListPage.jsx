@@ -13,6 +13,7 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
   const [copied, setCopied] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editListId, setEditListId] = useState(null);
+  const [existingItems, setExistingItems] = useState([]);
   
   // Filtri e paginazione
   const [searchQuery, setSearchQuery] = useState("");
@@ -82,8 +83,11 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
       setListName(data.title || "");
       setEmail(data.customer_email || "");
 
+      const items = data.items || [];
+      setExistingItems(items);
+
       // Pre-seleziona i prodotti partendo dagli items esistenti
-      const preselected = (data.items || []).map((item) => ({
+      const preselected = items.map((item) => ({
         id: item.product_id,
         variant_id: item.variant_id,
         title: item.product_title,
@@ -187,15 +191,24 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
         if (!updateRes.ok) throw new Error(listData.message || "Errore nell'aggiornamento della lista");
 
         // Sostituisci completamente gli items
-        const itemsPayload = selectedProducts.map((product) => ({
-          product_id: product.id,
-          variant_id: product.variant_id,
-          quantity: 1,
-          product_title: product.title,
-          product_image: product.image,
-          product_price: product.price,
-          product_handle: product.handle,
-        }));
+        const itemsPayload = selectedProducts.map((product) => {
+          const existing = existingItems.find(
+            (i) =>
+              String(i.product_id) === String(product.id) &&
+              String(i.variant_id) === String(product.variant_id)
+          );
+
+          return {
+            product_id: product.id,
+            variant_id: product.variant_id,
+            quantity: 1,
+            product_title: product.title,
+            product_image: product.image,
+            product_price: product.price,
+            product_handle: product.handle,
+            purchased: existing?.purchased || false,
+          };
+        });
 
         const itemsRes = await fetch(`/api/gift_lists/${editListId}/items`, {
           method: "PUT",
