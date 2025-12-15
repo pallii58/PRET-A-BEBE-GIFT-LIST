@@ -98,43 +98,6 @@ const ListDashboard = ({ onOpenDetail }) => {
     alert("URL copiato negli appunti!");
   };
 
-  // Apri modal modifica
-  const openEditModal = (list) => {
-    setEditingList(list);
-    setEditTitle(list.title);
-    setEditEmail(list.customer_email);
-    setEditModalOpen(true);
-  };
-
-  // Salva modifiche lista
-  const saveListChanges = async () => {
-    if (!editingList) return;
-    setSaving(true);
-    setError(null);
-    try {
-      const res = await fetch(`/api/gift_lists/${editingList.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: editTitle,
-          customer_email: editEmail,
-        }),
-      });
-      if (!res.ok) throw new Error("Errore nel salvataggio");
-      setSuccess("Lista aggiornata con successo!");
-      setEditModalOpen(false);
-      setEditingList(null);
-      fetchLists();
-      if (selected && selected.id === editingList.id) {
-        loadDetail(editingList.id);
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
-
   // Apri modal conferma eliminazione
   const openDeleteModal = (list) => {
     setDeletingList(list);
@@ -198,7 +161,7 @@ const ListDashboard = ({ onOpenDetail }) => {
               <Button onClick={() => copyPublicUrl(item.public_url)}>
                 Copia URL
               </Button>
-              <Button onClick={() => openEditModal(item)}>
+              <Button onClick={() => (window.location.href = `/create?edit=${item.id}`)}>
                 Modifica
               </Button>
               <Button destructive onClick={() => openDeleteModal(item)}>
@@ -209,54 +172,6 @@ const ListDashboard = ({ onOpenDetail }) => {
         ))}
       </div>
       {/* Dettaglio lista spostato in una pagina dedicata (/admin/list/:id) */}
-
-      {/* Modal Modifica Lista */}
-      {editModalOpen && (
-        <div style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: "rgba(0,0,0,0.5)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: "white",
-            borderRadius: "12px",
-            padding: "24px",
-            maxWidth: "500px",
-            width: "90%",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.2)"
-          }}>
-            <Text variant="headingLg">Modifica Lista</Text>
-            <div style={{ marginTop: "16px", marginBottom: "16px" }}>
-              <TextField
-                label="Nome della lista"
-                value={editTitle}
-                onChange={setEditTitle}
-              />
-            </div>
-            <div style={{ marginBottom: "24px" }}>
-              <TextField
-                label="Email cliente"
-                value={editEmail}
-                onChange={setEditEmail}
-                type="email"
-              />
-            </div>
-            <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
-              <Button onClick={() => setEditModalOpen(false)}>Annulla</Button>
-              <Button primary onClick={saveListChanges} loading={saving}>
-                Salva modifiche
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Modal Conferma Eliminazione */}
       {deleteModalOpen && (

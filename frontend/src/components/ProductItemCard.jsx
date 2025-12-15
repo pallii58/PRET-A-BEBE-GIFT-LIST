@@ -62,7 +62,7 @@ const ProductItemCard = ({ item, onAddToCart, onRemove, onMarkAvailable }) => {
         </Button>
       )}
       {onRemove && (
-        <Button size="slim" tone="critical" onClick={onRemove}>
+        <Button size="slim" destructive onClick={onRemove}>
           Rimuovi
         </Button>
       )}
