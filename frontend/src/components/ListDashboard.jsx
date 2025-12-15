@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Card, Text, Button, Banner, TextField, Modal } from "@shopify/polaris";
 import ProductItemCard from "./ProductItemCard.jsx";
 
-const ListDashboard = () => {
+const ListDashboard = ({ onOpenDetail }) => {
   const [lists, setLists] = useState([]);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -191,9 +191,7 @@ const ListDashboard = () => {
               <Text tone="subdued">{item.customer_email}</Text>
             </div>
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-              <Button onClick={() => (window.location.href = `/admin/list/${item.id}`)}>
-                Dettagli
-              </Button>
+              <Button onClick={() => (onOpenDetail ? onOpenDetail(item.id) : null)}>Dettagli</Button>
               <Button primary onClick={() => openPublicPage(item.public_url)}>
                 Apri pagina
               </Button>

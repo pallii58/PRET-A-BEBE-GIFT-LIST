@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Card, Text, Button, Banner } from "@shopify/polaris";
 import ProductItemCard from "./ProductItemCard.jsx";
 
-const AdminListDetailPage = ({ listId }) => {
+const AdminListDetailPage = ({ listId, onBack }) => {
   const [list, setList] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -151,9 +151,7 @@ const AdminListDetailPage = ({ listId }) => {
       >
         <div>
           <div style={{ marginBottom: "30px" }}>
-            <Button onClick={() => window.history.back()}>
-              &larr; Torna alle liste
-            </Button>
+            <Button onClick={() => (onBack ? onBack() : window.history.back())}>&larr; Torna alle liste</Button>
           </div>
           <Text as="h1" variant="headingLg">
             Dettaglio lista

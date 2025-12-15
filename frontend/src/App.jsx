@@ -130,6 +130,22 @@ function App() {
     return <LoginPage onLogin={handleLogin} />;
   }
 
+  const openAdminListDetail = (id) => {
+    setRoute({ page: "admin_list_detail", params: { id } });
+  };
+
+  const backToAdminDashboard = () => {
+    setRoute({ page: "admin", params: {} });
+  };
+
+  if (route.page === "admin_list_detail" && route.params.id) {
+    return (
+      <AppProvider i18n={{}}>
+        <AdminListDetailPage listId={route.params.id} onBack={backToAdminDashboard} />
+      </AppProvider>
+    );
+  }
+
   // Admin Dashboard (autenticato)
   const menu = [
     { id: "dashboard", label: "Dashboard" },
@@ -207,7 +223,7 @@ function App() {
           <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "16px" }}>
             {selected === "dashboard" && (
               <Card title="Dashboard liste" sectioned>
-                <ListDashboard />
+                <ListDashboard onOpenDetail={openAdminListDetail} />
               </Card>
             )}
             {selected === "create" && (
