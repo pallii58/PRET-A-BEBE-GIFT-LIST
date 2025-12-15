@@ -24,6 +24,7 @@ const ListDashboard = ({ onOpenDetail }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deletingList, setDeletingList] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [copiedId, setCopiedId] = useState(null);
 
   const fetchLists = async () => {
     try {
@@ -92,10 +93,11 @@ const ListDashboard = ({ onOpenDetail }) => {
     window.open(url, "_blank");
   };
 
-  const copyPublicUrl = (publicUrl) => {
+  const copyPublicUrl = (id, publicUrl) => {
     const url = `https://giftlist.pretabebe.it/lista/${publicUrl}`;
     navigator.clipboard.writeText(url);
-    alert("URL copiato negli appunti!");
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
   // Apri modal conferma eliminazione
@@ -158,8 +160,8 @@ const ListDashboard = ({ onOpenDetail }) => {
               <Button primary onClick={() => openPublicPage(item.public_url)}>
                 Apri pagina
               </Button>
-              <Button onClick={() => copyPublicUrl(item.public_url)}>
-                Copia URL
+              <Button onClick={() => copyPublicUrl(item.id, item.public_url)}>
+                {copiedId === item.id ? "Copiato!" : "Copia URL"}
               </Button>
               <Button onClick={() => (window.location.href = `/create?edit=${item.id}`)}>
                 Modifica
