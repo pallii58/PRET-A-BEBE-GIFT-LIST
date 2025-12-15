@@ -165,7 +165,7 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
 
   const getPublicUrl = () => {
     if (!createdList) return "";
-    return `https://pret-a-bebe-gift-list.vercel.app/gift/${createdList.public_url}`;
+    return `https://giftlist.pretabebe.it/lista/${createdList.public_url}`;
   };
 
   const copyLink = () => {

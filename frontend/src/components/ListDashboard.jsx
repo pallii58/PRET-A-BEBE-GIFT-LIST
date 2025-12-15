@@ -101,12 +101,12 @@ const ListDashboard = () => {
   };
 
   const openPublicPage = (publicUrl) => {
-    const url = `https://pret-a-bebe-gift-list.vercel.app/gift/${publicUrl}`;
+    const url = `https://giftlist.pretabebe.it/lista/${publicUrl}`;
     window.open(url, "_blank");
   };
 
   const copyPublicUrl = (publicUrl) => {
-    const url = `https://pret-a-bebe-gift-list.vercel.app/gift/${publicUrl}`;
+    const url = `https://giftlist.pretabebe.it/lista/${publicUrl}`;
     navigator.clipboard.writeText(url);
     alert("URL copiato negli appunti!");
   };
@@ -229,13 +229,13 @@ const ListDashboard = () => {
           </div>
           <div style={{ marginBottom: "16px" }}>
             <Text variant="headingXs">URL pubblico:</Text>
-            <Text tone="subdued">
+                <Text tone="subdued">
               <a 
-                href={`https://pret-a-bebe-gift-list.vercel.app/gift/${selected.public_url}`} 
+                href={`https://giftlist.pretabebe.it/lista/${selected.public_url}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
               >
-                https://pret-a-bebe-gift-list.vercel.app/gift/{selected.public_url}
+                https://giftlist.pretabebe.it/lista/{selected.public_url}
               </a>
             </Text>
           </div>

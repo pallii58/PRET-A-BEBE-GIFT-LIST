@@ -19,8 +19,10 @@ function App() {
     if (path === "/create" || path === "/create/") {
       setRoute({ page: "create", params: {} });
       setCheckingAuth(false);
-    } else if (path.startsWith("/gift/")) {
-      const publicUrl = path.replace("/gift/", "").replace("/", "");
+    } else if (path.startsWith("/lista/") || path.startsWith("/gift/")) {
+      const publicUrl = path
+        .replace(/^\/(lista|gift)\//, "")
+        .replace("/", "");
       setRoute({ page: "view", params: { publicUrl } });
       setCheckingAuth(false);
     } else {
