@@ -167,12 +167,11 @@ const AdminListDetailPage = ({ listId }) => {
         }}
       >
         <div>
-          <Button
-            onClick={() => window.history.back()}
-            style={{ marginBottom: "30px" }}
-          >
-            &larr; Torna alle liste
-          </Button>
+          <div style={{ marginBottom: "30px" }}>
+            <Button onClick={() => window.history.back()}>
+              &larr; Torna alle liste
+            </Button>
+          </div>
           <Text as="h1" variant="headingLg">
             Dettaglio lista
           </Text>
