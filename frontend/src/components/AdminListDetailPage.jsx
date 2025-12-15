@@ -1,17 +1,11 @@
 import { useEffect, useState } from "react";
-import { Card, Text, Button, Banner, TextField } from "@shopify/polaris";
+import { Card, Text, Button, Banner } from "@shopify/polaris";
 import ProductItemCard from "./ProductItemCard.jsx";
 
 const AdminListDetailPage = ({ listId }) => {
   const [list, setList] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-
-  // Form per aggiungere prodotto
-  const [productId, setProductId] = useState("");
-  const [variantId, setVariantId] = useState("");
-  const [quantity, setQuantity] = useState("1");
-  const [adding, setAdding] = useState(false);
 
   // Edit modal state
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -41,38 +35,6 @@ const AdminListDetailPage = ({ listId }) => {
     loadDetail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listId]);
-
-  const addProduct = async () => {
-    if (!list || !productId || !variantId) {
-      setError("Inserisci Product ID e Variant ID");
-      return;
-    }
-    setAdding(true);
-    setError(null);
-    setSuccess(null);
-    try {
-      const res = await fetch(`/api/gift_lists/${list.id}/items`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          product_id: productId,
-          variant_id: variantId,
-          quantity: parseInt(quantity) || 1,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.errors?.join(", ") || data.message);
-      setSuccess("Prodotto aggiunto alla lista!");
-      setProductId("");
-      setVariantId("");
-      setQuantity("1");
-      await loadDetail();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setAdding(false);
-    }
-  };
 
   const removeProduct = async (itemId) => {
     if (!list) return;
@@ -214,54 +176,6 @@ const AdminListDetailPage = ({ listId }) => {
           <Button destructive onClick={openDeleteModal}>
             Elimina lista
           </Button>
-        </div>
-
-        {/* Form per aggiungere prodotto */}
-        <div
-          style={{
-            marginBottom: "24px",
-            padding: "16px",
-            backgroundColor: "#f9f9f9",
-            borderRadius: "8px",
-            border: "1px solid #ddd",
-          }}
-        >
-          <Text variant="headingXs">Aggiungi prodotto alla lista:</Text>
-          <div style={{ display: "flex", gap: "12px", marginTop: "12px", flexWrap: "wrap" }}>
-            <div style={{ flex: 1, minWidth: "150px" }}>
-              <TextField
-                label="Product ID"
-                value={productId}
-                onChange={setProductId}
-                placeholder="es. 1234567890"
-              />
-            </div>
-            <div style={{ flex: 1, minWidth: "150px" }}>
-              <TextField
-                label="Variant ID"
-                value={variantId}
-                onChange={setVariantId}
-                placeholder="es. 9876543210"
-              />
-            </div>
-            <div style={{ width: "80px" }}>
-              <TextField
-                label="Qtà"
-                type="number"
-                value={quantity}
-                onChange={setQuantity}
-                min="1"
-              />
-            </div>
-            <div style={{ display: "flex", alignItems: "flex-end" }}>
-              <Button primary onClick={addProduct} loading={adding}>
-                Aggiungi
-              </Button>
-            </div>
-          </div>
-          <Text tone="subdued" variant="bodySm">
-            Trova Product ID e Variant ID nell'URL del prodotto su Shopify Admin.
-          </Text>
         </div>
 
         <div style={{ marginBottom: "8px" }}>
