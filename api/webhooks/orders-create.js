@@ -73,6 +73,14 @@ const verifyHmac = (rawBody, hmac, secret) => {
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ message: "Method not allowed" });
 
+  console.log("[Webhook] ---- orders-create START ----");
+  console.log("[Webhook] Incoming headers:", JSON.stringify({
+    "x-shopify-topic": req.headers["x-shopify-topic"],
+    "x-shopify-shop-domain": req.headers["x-shopify-shop-domain"],
+    "x-shopify-hmac-sha256": !!req.headers["x-shopify-hmac-sha256"],
+    "content-type": req.headers["content-type"],
+  }, null, 2));
+
   const hmacHeader = req.headers["x-shopify-hmac-sha256"];
   if (!hmacHeader) return res.status(401).send("Missing HMAC");
   const secret = process.env.SHOPIFY_WEBHOOK_SECRET;
@@ -91,6 +99,12 @@ export default async function handler(req, res) {
   let payload;
   try {
     payload = JSON.parse(rawBody.toString("utf8"));
+    console.log("[Webhook] Parsed payload:", JSON.stringify({
+      id: payload.id,
+      name: payload.name,
+      line_items_count: payload.line_items?.length || 0,
+      tags: payload.tags,
+    }, null, 2));
   } catch (err) {
     console.error("Invalid JSON", err);
     return res.status(400).send("Invalid JSON");
@@ -137,7 +151,10 @@ export default async function handler(req, res) {
     console.log(`[Webhook] Order ${payload.id} processed, ${updatedCount} items updated`);
     return res.status(200).send("ok");
   } catch (err) {
-    console.error("Failed to process webhook", err);
+    console.error("Failed to process webhook", {
+      message: err.message,
+      stack: err.stack,
+    });
     return res.status(500).send("Error");
   }
 }
