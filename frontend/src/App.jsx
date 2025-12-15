@@ -5,6 +5,7 @@ import CreateGiftListPage from "./components/CreateGiftListPage.jsx";
 import ViewGiftListPage from "./components/ViewGiftListPage.jsx";
 import LoginPage from "./components/LoginPage.jsx";
 import UserManagement from "./components/UserManagement.jsx";
+import AdminListDetailPage from "./components/AdminListDetailPage.jsx";
 
 function App() {
   const [selected, setSelected] = useState("dashboard");
