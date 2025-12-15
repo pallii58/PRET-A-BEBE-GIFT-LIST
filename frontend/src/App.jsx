@@ -5,6 +5,7 @@ import CreateGiftListPage from "./components/CreateGiftListPage.jsx";
 import ViewGiftListPage from "./components/ViewGiftListPage.jsx";
 import LoginPage from "./components/LoginPage.jsx";
 import UserManagement from "./components/UserManagement.jsx";
+import AdminListDetailPage from "./components/AdminListDetailPage.jsx";
 
 function App() {
   const [selected, setSelected] = useState("dashboard");
@@ -19,17 +20,26 @@ function App() {
     if (path === "/create" || path === "/create/") {
       setRoute({ page: "create", params: {} });
       setCheckingAuth(false);
-    } else if (path.startsWith("/lista/") || path.startsWith("/gift/")) {
-      const publicUrl = path
-        .replace(/^\/(lista|gift)\//, "")
-        .replace("/", "");
+      return;
+    }
+
+    if (path.startsWith("/lista/") || path.startsWith("/gift/")) {
+      const publicUrl = path.replace(/^\/(lista|gift)\//, "").replace("/", "");
       setRoute({ page: "view", params: { publicUrl } });
       setCheckingAuth(false);
-    } else {
-      // Admin page - check authentication
-      setRoute({ page: "admin", params: {} });
-      checkAuth();
+      return;
     }
+
+    // Admin area (embedded in Shopify)
+    if (path.startsWith("/admin/list/")) {
+      const id = path.replace("/admin/list/", "").replace("/", "");
+      setRoute({ page: "admin_list_detail", params: { id } });
+    } else {
+      setRoute({ page: "admin", params: {} });
+    }
+
+    // For admin routes, check authentication
+    checkAuth();
   }, []);
 
   const checkAuth = async () => {
@@ -119,10 +129,16 @@ function App() {
     return <LoginPage onLogin={handleLogin} />;
   }
 
+  // Admin - pagina dettaglio lista singola
+  if (route.page === "admin_list_detail" && route.params.id) {
+    return <AdminListDetailPage listId={route.params.id} />;
+  }
+
   // Admin Dashboard (autenticato)
   const menu = [
     { id: "dashboard", label: "Dashboard" },
-    { id: "create", label: "Crea lista" },
+    { id: "create", label: "Crea una lista" },
+    { id: "lists", label: "Le tue liste" },
   ];
 
   // Aggiungi gestione utenti solo per admin
@@ -193,16 +209,30 @@ function App() {
 
           <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "16px" }}>
             {selected === "dashboard" && (
-              <Card title="Dashboard liste" sectioned>
-                <ListDashboard />
+              <Card title="Dashboard" sectioned>
+                <Text>
+                  Benvenuto nella <strong>Lista Regali Pret a Bebe</strong>. Usa il menu a sinistra per
+                  creare nuove liste regalo e gestire le liste esistenti.
+                </Text>
+                <div style={{ marginTop: "16px", display: "flex", gap: "8px" }}>
+                  <Button primary onClick={() => setSelected("create")}>
+                    Crea una lista
+                  </Button>
+                  <Button onClick={() => setSelected("lists")}>Le tue liste</Button>
+                </div>
               </Card>
             )}
             {selected === "create" && (
-              <Card title="Crea nuova lista" sectioned>
-                <CreateGiftListPage 
-                  embedded={true} 
-                  onListCreated={() => setSelected("dashboard")}
+              <Card title="Crea una lista" sectioned>
+                <CreateGiftListPage
+                  embedded={true}
+                  onListCreated={() => setSelected("lists")}
                 />
+              </Card>
+            )}
+            {selected === "lists" && (
+              <Card title="Le tue liste" sectioned>
+                <ListDashboard />
               </Card>
             )}
             {selected === "users" && user.role === "admin" && (
