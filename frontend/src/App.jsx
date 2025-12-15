@@ -129,11 +129,6 @@ function App() {
     return <LoginPage onLogin={handleLogin} />;
   }
 
-  // Admin - pagina dettaglio lista singola
-  if (route.page === "admin_list_detail" && route.params.id) {
-    return <AdminListDetailPage listId={route.params.id} />;
-  }
-
   // Admin Dashboard (autenticato)
   const menu = [
     { id: "dashboard", label: "Dashboard" },
@@ -207,23 +202,30 @@ function App() {
           </nav>
 
           <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "16px" }}>
-            {selected === "dashboard" && (
-              <Card title="Dashboard liste" sectioned>
-                <ListDashboard />
-              </Card>
-            )}
-            {selected === "create" && (
-              <Card title="Crea nuova lista" sectioned>
-                <CreateGiftListPage 
-                  embedded={true} 
-                  onListCreated={() => setSelected("dashboard")}
-                />
-              </Card>
-            )}
-            {selected === "users" && user.role === "admin" && (
-              <Card title="Gestione Collaboratori" sectioned>
-                <UserManagement />
-              </Card>
+            {route.page === "admin_list_detail" && route.params.id ? (
+              // Pagina dettaglio lista: occupa tutta l'area di destra
+              <AdminListDetailPage listId={route.params.id} />
+            ) : (
+              <>
+                {selected === "dashboard" && (
+                  <Card title="Dashboard liste" sectioned>
+                    <ListDashboard />
+                  </Card>
+                )}
+                {selected === "create" && (
+                  <Card title="Crea nuova lista" sectioned>
+                    <CreateGiftListPage 
+                      embedded={true} 
+                      onListCreated={() => setSelected("dashboard")}
+                    />
+                  </Card>
+                )}
+                {selected === "users" && user.role === "admin" && (
+                  <Card title="Gestione Collaboratori" sectioned>
+                    <UserManagement />
+                  </Card>
+                )}
+              </>
             )}
           </div>
         </div>
