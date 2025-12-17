@@ -441,7 +441,7 @@ const styles = {
   },
   buyButton: {
     padding: "12px 24px",
-    backgroundColor: "#e74c3c",
+    backgroundColor: "#d58263",
     color: "white",
     border: "none",
     borderRadius: "8px",

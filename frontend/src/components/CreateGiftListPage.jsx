@@ -800,7 +800,7 @@ const styles = {
   selectedTitle: {
     margin: "0 0 12px",
     fontSize: "16px",
-    color: "#e74c3c",
+    color: "#d58263",
   },
   continueButtonSidebar: {
     width: "100%",
@@ -857,7 +857,7 @@ const styles = {
   },
   selectedBadge: {
     padding: "8px 16px",
-    backgroundColor: "#e74c3c",
+    backgroundColor: "#d58263",
     color: "white",
     borderRadius: "20px",
     fontWeight: "bold",
@@ -904,9 +904,9 @@ const styles = {
     flex: 1,
   },
   productCardSelected: {
-    borderColor: "#e74c3c",
+    borderColor: "#d58263",
     backgroundColor: "#fef5f4",
-    boxShadow: "0 4px 12px rgba(231,76,60,0.2)",
+    boxShadow: "0 4px 12px rgba(213,130,99,0.2)",
   },
   productImage: {
     width: "100%",
@@ -1157,7 +1157,7 @@ const styles = {
   },
   retryButton: {
     padding: "10px 20px",
-    backgroundColor: "#e74c3c",
+    backgroundColor: "#d58263",
     color: "white",
     border: "none",
     borderRadius: "8px",
