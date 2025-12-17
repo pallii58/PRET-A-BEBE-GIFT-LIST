@@ -71,14 +71,17 @@ export default async function handler(req, res) {
   // PUT - Modifica lista
   if (req.method === "PUT") {
     try {
-      const { title, customer_email } = req.body;
+      const { title, customer_email, first_name, last_name, phone } = req.body;
       
       const updateData = {};
       if (title) {
         updateData.title = title;
         updateData.public_url = await generatePublicUrl(title, id);
       }
-      if (customer_email) updateData.customer_email = customer_email;
+      if (typeof customer_email !== "undefined") updateData.customer_email = customer_email;
+      if (typeof first_name !== "undefined") updateData.first_name = first_name;
+      if (typeof last_name !== "undefined") updateData.last_name = last_name;
+      if (typeof phone !== "undefined") updateData.phone = phone;
       
       if (Object.keys(updateData).length === 0) {
         return res.status(400).json({ message: "Nessun dato da aggiornare" });

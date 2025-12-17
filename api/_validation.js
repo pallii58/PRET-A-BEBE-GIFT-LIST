@@ -3,6 +3,9 @@ import Joi from "joi";
 export const giftListSchema = Joi.object({
   title: Joi.string().min(3).max(200).required(),
   customer_email: Joi.string().email().required(),
+  first_name: Joi.string().allow("", null),
+  last_name: Joi.string().allow("", null),
+  phone: Joi.string().allow("", null),
 });
 
 export const giftListItemSchema = Joi.object({

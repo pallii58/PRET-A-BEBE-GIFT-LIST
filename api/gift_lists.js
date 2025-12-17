@@ -47,7 +47,7 @@ export default async function handler(req, res) {
   if (req.method === "POST") {
     const { error, value } = giftListSchema.validate(req.body || {}, { abortEarly: false });
     if (error) return res.status(400).json({ errors: error.details.map((d) => d.message) });
-    const { title, customer_email } = value;
+    const { title, customer_email, first_name, last_name, phone } = value;
     try {
       const public_url = await generatePublicUrl(title);
       const { data, error: dbError } = await supabase
@@ -55,6 +55,9 @@ export default async function handler(req, res) {
         .insert({
           title,
           customer_email,
+          first_name,
+          last_name,
+          phone,
           public_url,
           shop_domain: req.headers["x-shop-domain"] || "unknown",
         })

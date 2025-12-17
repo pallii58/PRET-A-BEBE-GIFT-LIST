@@ -10,6 +10,9 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [createdList, setCreatedList] = useState(null);
@@ -85,6 +88,9 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
 
       setListName(data.title || "");
       setEmail(data.customer_email || "");
+      setFirstName(data.first_name || "");
+      setLastName(data.last_name || "");
+      setPhone(data.phone || "");
 
       const items = data.items || [];
       setExistingItems(items);
@@ -184,11 +190,17 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
       let listData;
 
       if (editMode && editListId) {
-        // Aggiorna lista esistente (titolo/email + slug)
+        // Aggiorna lista esistente (titolo/email + slug + dati cliente)
         const updateRes = await fetch(`/api/gift_lists/${editListId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title: listName, customer_email: email }),
+          body: JSON.stringify({
+            title: listName,
+            customer_email: email,
+            first_name: firstName,
+            last_name: lastName,
+            phone,
+          }),
         });
         listData = await updateRes.json();
         if (!updateRes.ok) throw new Error(listData.message || "Errore nell'aggiornamento della lista");
@@ -225,7 +237,13 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
         const listRes = await fetch("/api/gift_lists", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title: listName, customer_email: email }),
+          body: JSON.stringify({
+            title: listName,
+            customer_email: email,
+            first_name: firstName,
+            last_name: lastName,
+            phone,
+          }),
         });
         listData = await listRes.json();
         if (!listRes.ok) throw new Error(listData.message || "Errore nella creazione");
