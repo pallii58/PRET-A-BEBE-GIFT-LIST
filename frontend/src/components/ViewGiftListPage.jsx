@@ -301,6 +301,8 @@ const styles = {
     minHeight: "100vh",
     backgroundColor: "#ffffff",
     fontFamily: "Figtree, sans-serif",
+    display: "flex",
+    flexDirection: "column",
   },
   header: {
     backgroundColor: "#f3ede4",
@@ -478,7 +480,7 @@ const styles = {
     fontWeight: "bold",
   },
   footer: {
-    marginTop: "40px",
+    marginTop: "auto",
     backgroundColor: "#d58263",
     borderTop: "1px solid #c87457",
     fontSize: "13px",

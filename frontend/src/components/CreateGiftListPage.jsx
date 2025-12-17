@@ -698,6 +698,8 @@ const styles = {
     minHeight: "100vh",
     backgroundColor: "#ffffff",
     fontFamily: "Figtree, sans-serif",
+    display: "flex",
+    flexDirection: "column",
   },
   containerEmbedded: {
     backgroundColor: "#ffffff",
@@ -1184,7 +1186,7 @@ const styles = {
   },
 
   footer: {
-    marginTop: "40px",
+    marginTop: "auto",
     backgroundColor: "#d58263",
     borderTop: "1px solid #c87457",
     fontSize: "13px",
