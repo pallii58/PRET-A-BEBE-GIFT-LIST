@@ -112,11 +112,13 @@ const ViewGiftListPage = ({ publicUrl }) => {
           {/* Disclaimer ritiro in negozio */}
           <div
             style={{
-              marginBottom: "24px",
+              margin: "0 auto 24px",
               padding: "12px 16px",
               borderRadius: "8px",
               backgroundColor: "#fff3cd",
               border: "1px solid #ffe58f",
+              width: "fit-content",
+              maxWidth: "100%",
             }}
           >
             <p
