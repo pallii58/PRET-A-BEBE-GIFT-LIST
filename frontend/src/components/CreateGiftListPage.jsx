@@ -299,12 +299,6 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
               con amici e parenti. Loro potranno vedere cosa ti serve e regalarti 
               esattamente quello che desideri!
             </p>
-            <ul style={styles.benefits}>
-              <li>Scegli i prodotti che ami dal nostro catalogo</li>
-              <li>Ricevi aggiornamenti via email sugli acquisti</li>
-              <li>Condividi il link con chi vuoi</li>
-              <li>Evita regali doppi!</li>
-            </ul>
             <button style={styles.primaryButton} onClick={() => setStep(2)}>
               Inizia a creare la tua lista
             </button>
