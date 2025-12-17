@@ -283,7 +283,6 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
             alt="PRET A BEBÈ"
             style={styles.logoImg}
           />
-          <p style={styles.subtitle}>Lista Regali</p>
         </div>
       )}
 
@@ -698,13 +697,8 @@ const styles = {
     textAlign: "center",
   },
   logoImg: {
-    height: 42,
+    height: 20,
     objectFit: "contain",
-  },
-  subtitle: {
-    margin: "5px 0 0",
-    fontSize: "14px",
-    opacity: 0.8,
   },
   content: {
     maxWidth: "800px",
