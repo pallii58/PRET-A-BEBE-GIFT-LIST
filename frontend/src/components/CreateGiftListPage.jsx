@@ -269,7 +269,7 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
   };
 
   const shareOnWhatsApp = () => {
-    const text = `🎁 Ecco la mia Lista Regali "${listName}"!\n\nAiutami a scegliere i regali per il mio bambino:\n${getPublicUrl()}`;
+    const text = `Ecco la mia Lista Regali "${listName}"!\n\nAiutami a scegliere i regali per il mio bambino:\n${getPublicUrl()}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
 
@@ -290,17 +290,17 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
       {step === 1 && !embedded && (
         <div style={styles.content}>
           <div style={styles.card}>
-            <h2 style={styles.title}>🎁 Crea la tua Lista Regali</h2>
+            <h2 style={styles.title}>Crea la tua Lista Regali</h2>
             <p style={styles.description}>
               Stai aspettando un bebè? Crea la tua lista dei desideri e condividila 
               con amici e parenti. Loro potranno vedere cosa ti serve e regalarti 
               esattamente quello che desideri!
             </p>
             <ul style={styles.benefits}>
-              <li>✨ Scegli i prodotti che ami dal nostro catalogo</li>
-              <li>📧 Ricevi aggiornamenti via email sugli acquisti</li>
-              <li>🔗 Condividi il link con chi vuoi</li>
-              <li>🎉 Evita regali doppi!</li>
+              <li>Scegli i prodotti che ami dal nostro catalogo</li>
+              <li>Ricevi aggiornamenti via email sugli acquisti</li>
+              <li>Condividi il link con chi vuoi</li>
+              <li>Evita regali doppi!</li>
             </ul>
             <button style={styles.primaryButton} onClick={() => setStep(2)}>
               Inizia a creare la tua lista
@@ -553,7 +553,7 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
                       style={styles.removeButton}
                       onClick={() => toggleProduct(p)}
                     >
-                      ✕
+                      x
                     </button>
                   </div>
                 ))}
@@ -577,7 +577,7 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
                     : "Creazione..."
                   : editMode
                     ? "Salva modifiche alla lista"
-                    : "Crea la mia lista 🎁"}
+                    : "Crea la mia lista"}
               </button>
             </div>
           </div>
@@ -588,7 +588,7 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
       {step === 4 && createdList && (
         <div style={styles.content}>
           <div style={styles.card}>
-            <div style={styles.successIcon}>🎉</div>
+            <div style={styles.successIcon}>✓</div>
             <h2 style={styles.title}>Lista creata con successo!</h2>
             <p style={styles.description}>
               La tua lista "<strong>{listName}</strong>" è pronta. 
@@ -609,16 +609,16 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
 
             <div style={styles.shareButtons}>
               <button style={styles.whatsappButton} onClick={shareOnWhatsApp}>
-                📱 Condividi su WhatsApp
+                Condividi su WhatsApp
               </button>
             </div>
 
-            <button
-              style={styles.secondaryButton}
-              onClick={() => window.open(getPublicUrl(), "_blank")}
-            >
-              👁 Visualizza la tua lista
-            </button>
+              <button
+                style={styles.secondaryButton}
+                onClick={() => window.open(getPublicUrl(), "_blank")}
+              >
+                Visualizza la tua lista
+              </button>
           </div>
         </div>
       )}
@@ -805,7 +805,7 @@ const styles = {
   continueButtonSidebar: {
     width: "100%",
     padding: "12px",
-    backgroundColor: "#e74c3c",
+    backgroundColor: "#d58263",
     color: "white",
     border: "none",
     borderRadius: "8px",
@@ -994,7 +994,7 @@ const styles = {
   // Buttons
   primaryButton: {
     padding: "16px 32px",
-    backgroundColor: "#e74c3c",
+    backgroundColor: "#d58263",
     color: "white",
     border: "none",
     borderRadius: "8px",

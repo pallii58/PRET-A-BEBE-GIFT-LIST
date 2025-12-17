@@ -175,7 +175,7 @@ const ViewGiftListPage = ({ publicUrl }) => {
                     {item.product_image ? (
                       <img src={item.product_image} alt={item.product_title} style={styles.itemImageImg} />
                     ) : (
-                      <div style={styles.itemImage}>🎀</div>
+                      <div style={styles.itemImage}></div>
                     )}
                     <div style={styles.itemInfo}>
                       <h4 style={styles.itemTitle}>{item.product_title || `Prodotto #${item.product_id}`}</h4>
@@ -217,7 +217,7 @@ const ViewGiftListPage = ({ publicUrl }) => {
                     {item.product_image ? (
                       <img src={item.product_image} alt={item.product_title} style={styles.itemImageImgPurchased} />
                     ) : (
-                      <div style={styles.itemImage}>✅</div>
+                      <div style={styles.itemImage}></div>
                     )}
                     <div style={styles.itemInfo}>
                       <h4 style={styles.itemTitle}>{item.product_title || `Prodotto #${item.product_id}`}</h4>
@@ -336,7 +336,7 @@ const styles = {
     marginBottom: "40px",
   },
   errorIcon: {
-    fontSize: "64px",
+    fontSize: "24px",
     textAlign: "center",
     marginBottom: "16px",
   },
