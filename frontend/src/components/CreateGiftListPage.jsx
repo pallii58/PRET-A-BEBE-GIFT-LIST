@@ -683,11 +683,11 @@ const styles = {
   container: {
     minHeight: "100vh",
     backgroundColor: "#ffffff",
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    fontFamily: "Figtree, sans-serif",
   },
   containerEmbedded: {
     backgroundColor: "#ffffff",
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    fontFamily: "Figtree, sans-serif",
     minHeight: "600px",
   },
   header: {

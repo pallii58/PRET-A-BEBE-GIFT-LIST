@@ -297,7 +297,7 @@ const styles = {
   container: {
     minHeight: "100vh",
     backgroundColor: "#ffffff",
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    fontFamily: "Figtree, sans-serif",
   },
   header: {
     backgroundColor: "#f3ede4",
