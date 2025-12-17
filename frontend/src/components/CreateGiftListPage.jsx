@@ -329,7 +329,7 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
                     }}
                     onClick={() => selectCollection(null)}
                   >
-                    🏠 Tutti i prodotti
+                    Tutti i prodotti
                   </button>
                   {collections.map((col) => (
                     <button
