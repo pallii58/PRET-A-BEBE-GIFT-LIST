@@ -603,7 +603,6 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
       {step === 4 && createdList && (
         <div style={styles.content}>
           <div style={styles.card}>
-            <div style={styles.successIcon}>✓</div>
             <h2 style={styles.title}>Lista creata con successo!</h2>
             <p style={styles.description}>
               La tua lista "<strong>{listName}</strong>" è pronta. 
