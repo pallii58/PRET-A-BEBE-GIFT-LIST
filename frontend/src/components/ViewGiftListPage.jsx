@@ -475,7 +475,7 @@ const styles = {
   ctaButton: {
     display: "inline-block",
     padding: "12px 32px",
-    backgroundColor: "#2c3e50",
+    backgroundColor: "#d58263",
     color: "white",
     textDecoration: "none",
     borderRadius: "8px",
