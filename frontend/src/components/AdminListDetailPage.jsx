@@ -177,6 +177,18 @@ const AdminListDetailPage = ({ listId, onBack }) => {
           <Text>{list.customer_email}</Text>
         </div>
         <div style={{ marginBottom: "16px" }}>
+          <Text variant="headingXs">Nome:</Text>
+          <Text>{list.first_name || "—"}</Text>
+        </div>
+        <div style={{ marginBottom: "16px" }}>
+          <Text variant="headingXs">Cognome:</Text>
+          <Text>{list.last_name || "—"}</Text>
+        </div>
+        <div style={{ marginBottom: "16px" }}>
+          <Text variant="headingXs">Numero di telefono:</Text>
+          <Text>{list.phone || "—"}</Text>
+        </div>
+        <div style={{ marginBottom: "16px" }}>
           <Text variant="headingXs">URL pubblico:</Text>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
             <Text tone="subdued">
