@@ -243,12 +243,55 @@ const ViewGiftListPage = ({ publicUrl }) => {
       </div>
 
       {/* Footer */}
-      <div style={styles.footer}>
-        <p>© 2025 PRET A BEBÈ - Tutti i diritti riservati</p>
-        <a href="https://www.pretabebe.com" style={styles.footerLink}>
-          Visita il nostro negozio
-        </a>
-      </div>
+      <footer style={styles.footer}>
+        <div style={styles.footerTop}>
+          <div style={styles.footerCol}>
+            <h6 style={styles.footerTitle}>Chi siamo</h6>
+            <p style={styles.footerText}>
+              <strong>Fabio</strong> e <strong>Laura</strong>, marito e moglie, amici e soci ma soprattutto
+              giovani genitori della piccola <strong>Bianca</strong>.
+            </p>
+            <p style={styles.footerText}>
+              Dal 2018, proprio con l’arrivo di Bibi nasce l’idea di creare una <strong>boutique</strong>{' '}
+              dedicata al mondo prima infanzia che fosse completa e con prodotti ricercati, con particolare
+              attenzione alle esigenze dei nuovi genitori.
+            </p>
+            <p style={styles.footerText}>pi. 12225930010</p>
+          </div>
+          <div style={styles.footerCol}>
+            <h6 style={styles.footerTitle}>INFO LEGALI</h6>
+            <ul style={styles.footerMenu}>
+              <li>
+                <a href="https://www.pretabebe.com/policies/privacy-policy" style={styles.footerLink}>
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="https://www.pretabebe.com/policies/refund-policy" style={styles.footerLink}>
+                  Politica di rimborso
+                </a>
+              </li>
+              <li>
+                <a href="https://www.pretabebe.com/policies/terms-of-service" style={styles.footerLink}>
+                  Termini e condizioni
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div style={styles.footerBottom}>
+          <div style={styles.footerCopy}>
+            <span>
+              © 2025{' '}
+              <a href="https://www.pretabebe.com" style={styles.footerLink}>
+                PRET A BEBE
+              </a>
+              .&nbsp;All rights reserved
+            </span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
@@ -439,14 +482,56 @@ const styles = {
     fontWeight: "bold",
   },
   footer: {
-    textAlign: "center",
-    padding: "20px",
-    color: "#999",
-    fontSize: "14px",
+    marginTop: "40px",
+    backgroundColor: "#f9f7f2",
+    borderTop: "1px solid #eee",
+    fontSize: "13px",
+    color: "#555",
+  },
+  footerTop: {
+    maxWidth: "900px",
+    margin: "0 auto",
+    padding: "24px 20px 8px",
+    display: "flex",
+    gap: "32px",
+    flexWrap: "wrap",
+  },
+  footerCol: {
+    flex: 1,
+    minWidth: "220px",
+  },
+  footerTitle: {
+    margin: "0 0 8px",
+    fontSize: "13px",
+    fontWeight: 600,
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
+    color: "#333",
+  },
+  footerText: {
+    margin: "0 0 6px",
+    lineHeight: 1.5,
+  },
+  footerMenu: {
+    listStyle: "none",
+    padding: 0,
+    margin: 0,
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
   },
   footerLink: {
-    color: "#e74c3c",
+    color: "#333",
     textDecoration: "none",
+  },
+  footerBottom: {
+    borderTop: "1px solid #eee",
+    padding: "12px 20px",
+    textAlign: "center",
+  },
+  footerCopy: {
+    fontSize: "12px",
+    color: "#777",
   },
   loading: {
     textAlign: "center",
