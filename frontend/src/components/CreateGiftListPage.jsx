@@ -728,6 +728,7 @@ const styles = {
     listStyle: "none",
     padding: 0,
     margin: "24px 0",
+    textAlign: "center",
   },
   
   // Layout Shop con sidebar - altezza 100vh
@@ -1000,6 +1001,8 @@ const styles = {
     fontSize: "16px",
     fontWeight: "bold",
     cursor: "pointer",
+    display: "block",
+    margin: "0 auto",
   },
   buttonDisabled: {
     backgroundColor: "#ccc",
