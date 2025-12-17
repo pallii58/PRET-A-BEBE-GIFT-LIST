@@ -50,7 +50,11 @@ const ViewGiftListPage = ({ publicUrl }) => {
     return (
       <div style={styles.container}>
         <div style={styles.header}>
-          <h1 style={styles.logo}>PRET A BEBÈ</h1>
+          <img
+            src="https://www.pretabebe.com/cdn/shop/files/logo-pretabebe_310x.png?v=1669818359"
+            alt="PRET A BEBÈ"
+            style={styles.logoImg}
+          />
           <p style={styles.subtitle}>Lista Regali</p>
         </div>
         <div style={styles.content}>
@@ -66,7 +70,11 @@ const ViewGiftListPage = ({ publicUrl }) => {
     return (
       <div style={styles.container}>
         <div style={styles.header}>
-          <h1 style={styles.logo}>PRET A BEBÈ</h1>
+          <img
+            src="https://www.pretabebe.com/cdn/shop/files/logo-pretabebe_310x.png?v=1669818359"
+            alt="PRET A BEBÈ"
+            style={styles.logoImg}
+          />
           <p style={styles.subtitle}>Lista Regali</p>
         </div>
         <div style={styles.content}>
@@ -87,7 +95,11 @@ const ViewGiftListPage = ({ publicUrl }) => {
     <div style={styles.container}>
       {/* Header */}
       <div style={styles.header}>
-        <h1 style={styles.logo}>PRET A BEBÈ</h1>
+        <img
+          src="https://www.pretabebe.com/cdn/shop/files/logo-pretabebe_310x.png?v=1669818359"
+          alt="PRET A BEBÈ"
+          style={styles.logoImg}
+        />
         <p style={styles.subtitle}>Lista Regali</p>
       </div>
 
@@ -248,16 +260,14 @@ const styles = {
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
   },
   header: {
-    backgroundColor: "#2c3e50",
-    color: "white",
-    padding: "20px",
+    backgroundColor: "#f3ede4",
+    color: "#2c3e50",
+    padding: "16px 20px",
     textAlign: "center",
   },
-  logo: {
-    margin: 0,
-    fontSize: "28px",
-    fontWeight: "bold",
-    letterSpacing: "2px",
+  logoImg: {
+    height: 42,
+    objectFit: "contain",
   },
   subtitle: {
     margin: "5px 0 0",
