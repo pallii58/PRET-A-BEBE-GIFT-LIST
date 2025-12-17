@@ -343,6 +343,7 @@ const styles = {
     color: "#2c3e50",
     marginBottom: "16px",
     textAlign: "center",
+    fontWeight: "700",
   },
   description: {
     fontSize: "16px",
