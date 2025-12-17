@@ -40,54 +40,6 @@ const ListDashboard = ({ onOpenDetail }) => {
     fetchLists();
   }, []);
 
-  const addProduct = async () => {
-    if (!selected || !productId || !variantId) {
-      setError("Inserisci Product ID e Variant ID");
-      return;
-    }
-    setAdding(true);
-    setError(null);
-    setSuccess(null);
-    try {
-      const res = await fetch(`/api/gift_lists/${selected.id}/items`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          product_id: productId,
-          variant_id: variantId,
-          quantity: parseInt(quantity) || 1,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.errors?.join(", ") || data.message);
-      setSuccess("Prodotto aggiunto alla lista!");
-      setProductId("");
-      setVariantId("");
-      setQuantity("1");
-      // Ricarica le liste
-      fetchLists();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setAdding(false);
-    }
-  };
-
-  const removeProduct = async (itemId) => {
-    if (!selected) return;
-    setError(null);
-    try {
-      const res = await fetch(`/api/gift_lists/${selected.id}/items/${itemId}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Errore nella rimozione");
-      setSuccess("Prodotto rimosso dalla lista!");
-      fetchLists();
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
   const openPublicPage = (publicUrl) => {
     const url = `https://giftlist.pretabebe.it/lista/${publicUrl}`;
     window.open(url, "_blank");
@@ -119,9 +71,6 @@ const ListDashboard = ({ onOpenDetail }) => {
       setSuccess("Lista eliminata con successo!");
       setDeleteModalOpen(false);
       setDeletingList(null);
-      if (selected && selected.id === deletingList.id) {
-        setSelected(null);
-      }
       fetchLists();
     } catch (err) {
       setError(err.message);
