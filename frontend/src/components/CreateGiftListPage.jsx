@@ -7,6 +7,9 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [listName, setListName] = useState("");
   const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [createdList, setCreatedList] = useState(null);
@@ -534,6 +537,36 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
                   placeholder="es. sofia@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Nome</label>
+                <input
+                  type="text"
+                  style={styles.input}
+                  placeholder="es. Marco"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Cognome</label>
+                <input
+                  type="text"
+                  style={styles.input}
+                  placeholder="es. Merola"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Numero di telefono</label>
+                <input
+                  type="tel"
+                  style={styles.input}
+                  placeholder="es. +39 333 1234567"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                 />
               </div>
             </div>
