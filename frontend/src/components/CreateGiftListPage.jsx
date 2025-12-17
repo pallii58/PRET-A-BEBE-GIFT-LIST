@@ -640,7 +640,7 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
               </p>
               <p style={styles.footerText}>pi. 12225930010</p>
             </div>
-            <div style={styles.footerCol}>
+            <div style={{ ...styles.footerCol, ...styles.footerColRight }}>
               <h6 style={styles.footerTitle}>INFO LEGALI</h6>
               <ul style={styles.footerMenu}>
                 <li>
@@ -1168,10 +1168,10 @@ const styles = {
 
   footer: {
     marginTop: "40px",
-    backgroundColor: "#f9f7f2",
-    borderTop: "1px solid #eee",
+    backgroundColor: "#d58263",
+    borderTop: "1px solid #c87457",
     fontSize: "13px",
-    color: "#555",
+    color: "#f3ede4",
   },
   footerTop: {
     maxWidth: "800px",
@@ -1191,7 +1191,7 @@ const styles = {
     fontWeight: 600,
     textTransform: "uppercase",
     letterSpacing: "0.05em",
-    color: "#333",
+    color: "#f3ede4",
   },
   footerText: {
     margin: "0 0 6px",
@@ -1206,17 +1206,20 @@ const styles = {
     gap: "4px",
   },
   footerLink: {
-    color: "#333",
+    color: "#f3ede4",
     textDecoration: "none",
   },
+  footerColRight: {
+    textAlign: "right",
+  },
   footerBottom: {
-    borderTop: "1px solid #eee",
+    borderTop: "1px solid #c87457",
     padding: "12px 20px",
     textAlign: "center",
   },
   footerCopy: {
     fontSize: "12px",
-    color: "#777",
+    color: "#f3ede4",
   },
   loaderContainer: {
     display: "flex",
