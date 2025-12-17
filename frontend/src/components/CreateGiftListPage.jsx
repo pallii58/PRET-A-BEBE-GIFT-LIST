@@ -729,7 +729,7 @@ const styles = {
     padding: "40px 20px",
   },
   card: {
-    backgroundColor: "white",
+    backgroundColor: "#f9f3ec",
     borderRadius: "16px",
     padding: "40px",
     boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
