@@ -119,7 +119,15 @@ const ViewGiftListPage = ({ publicUrl }) => {
               border: "1px solid #ffe58f",
             }}
           >
-            <p style={{ margin: 0, color: "#8a6d3b", fontSize: "14px", lineHeight: 1.5 }}>
+            <p
+              style={{
+                margin: 0,
+                color: "#8a6d3b",
+                fontSize: "14px",
+                lineHeight: 1.5,
+                textAlign: "center",
+              }}
+            >
               Gli acquisti effettuati da questa lista sono esclusivamente per{" "}
               <strong>ritiro in negozio</strong>.
               <br />
