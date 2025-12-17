@@ -112,7 +112,9 @@ const ViewGiftListPage = ({ publicUrl }) => {
           >
             <p style={{ margin: 0, color: "#8a6d3b", fontSize: "14px", lineHeight: 1.5 }}>
               Gli acquisti effettuati da questa lista sono esclusivamente per{" "}
-              <strong>ritiro in negozio</strong>. I prodotti <strong>non vengono spediti a casa</strong>.
+              <strong>ritiro in negozio</strong>.
+              <br />
+              I prodotti <strong>non vengono spediti a casa</strong>.
             </p>
           </div>
 
