@@ -184,14 +184,7 @@ const ViewGiftListPage = ({ publicUrl }) => {
                       )}
                     </div>
                     <div style={styles.itemActions}>
-                      {item.product_handle && (
-                        <button
-                          style={styles.discoverButton}
-                          onClick={() => openProduct(item)}
-                        >
-                          Scopri di più
-                        </button>
-                      )}
+                      {/* Pulsante "Scopri di più" nascosto temporaneamente */}
                       <button
                         style={styles.buyButton}
                         onClick={() => addToCart(item)}

@@ -463,15 +463,7 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
                             <p style={styles.productPrice}>€{parseFloat(product.price).toFixed(2)}</p>
                             {isSelected && <span style={styles.checkmark}>✓</span>}
                           </div>
-                          <button
-                            style={styles.discoverButton}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              window.open(`https://www.pretabebe.com/products/${product.handle}`, '_blank');
-                            }}
-                          >
-                            Scopri di più
-                          </button>
+                          {/* Pulsante "Scopri di più" nascosto temporaneamente */}
                         </div>
                       );
                     })}
