@@ -514,10 +514,6 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
         <div style={styles.content}>
           <div style={styles.card}>
             <h2 style={styles.title}>Completa la tua lista</h2>
-            <p style={styles.description}>
-              Dai un nome alla tua lista e inserisci la tua email per ricevere 
-              aggiornamenti quando qualcuno acquista un regalo.
-            </p>
 
             <div style={styles.form}>
               <div style={styles.inputGroup}>
