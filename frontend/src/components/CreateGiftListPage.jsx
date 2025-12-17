@@ -376,30 +376,7 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
                   style={styles.searchInput}
                 />
                 <button type="submit" style={styles.searchButton}>
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle
-                      cx="11"
-                      cy="11"
-                      r="6"
-                      stroke="white"
-                      strokeWidth="2"
-                    />
-                    <line
-                      x1="15.5"
-                      y1="15.5"
-                      x2="20"
-                      y2="20"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
+                  Cerca
                 </button>
               </form>
               {selectedProducts.length > 0 && (
