@@ -100,6 +100,22 @@ const ViewGiftListPage = ({ publicUrl }) => {
             e renderai felice qualcuno di speciale.
           </p>
 
+          {/* Disclaimer ritiro in negozio */}
+          <div
+            style={{
+              marginBottom: "24px",
+              padding: "12px 16px",
+              borderRadius: "8px",
+              backgroundColor: "#fff3cd",
+              border: "1px solid #ffe58f",
+            }}
+          >
+            <p style={{ margin: 0, color: "#8a6d3b", fontSize: "14px", lineHeight: 1.5 }}>
+              Gli acquisti effettuati da questa lista sono esclusivamente per{" "}
+              <strong>ritiro in negozio</strong>. I prodotti <strong>non vengono spediti a casa</strong>.
+            </p>
+          </div>
+
           {/* Campo nome di chi regala */}
           <div style={{ marginBottom: "24px" }}>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: 600, color: "#2c3e50" }}>
