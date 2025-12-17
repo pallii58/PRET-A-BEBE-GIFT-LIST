@@ -682,11 +682,11 @@ const CreateGiftListPage = ({ embedded = false, onListCreated }) => {
 const styles = {
   container: {
     minHeight: "100vh",
-    backgroundColor: "#fdf8f5",
+    backgroundColor: "#ffffff",
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
   },
   containerEmbedded: {
-    backgroundColor: "#fdf8f5",
+    backgroundColor: "#ffffff",
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
     minHeight: "600px",
   },
