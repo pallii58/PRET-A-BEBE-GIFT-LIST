@@ -323,7 +323,7 @@ const styles = {
   giftIcon: {
     fontSize: "64px",
     textAlign: "center",
-    marginBottom: "16px",
+    marginBottom: "40px",
   },
   errorIcon: {
     fontSize: "64px",
